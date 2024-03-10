@@ -9,7 +9,7 @@ function createWindow() {
       nodeIntegration: true
     }
   });
-  win.loadFile('index.html');
+  win.loadFile('./public/index.html');
   const port = new SerialPort({ path: 'COM3', baudRate: 9600 });
   port.write('Hello MCU');
 
