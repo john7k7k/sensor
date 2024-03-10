@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "electron": "^29.1.1",
     "serialport": "^10.5.0"
   },
   "name": "elec",
@@ -12,5 +11,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "electron": "^29.1.1"
+  }
 }
