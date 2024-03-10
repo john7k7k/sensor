@@ -14,7 +14,7 @@ export default {
   name: 'App',
   mounted() {
     this.$router.push('/home');
-    window.electronApi.on('recive', (event, arg) => {
+    window.electronApi.on('data', (event, arg) => {
       alert('Received message from main process:' + arg);
     });
     window.electronApi.send('data', 'adf');

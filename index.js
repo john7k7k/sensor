@@ -23,7 +23,7 @@ function createWindow() {
 
 ipcMain.on('data', (e, mes) => {
   console.log(mes);
-  e.sender.send('recive', 'Hello from main process!');
+  e.sender.send('data', 'Hello from main process!');
 });
 
 app.on('ready', createWindow);
