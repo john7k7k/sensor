@@ -1,14 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello Electron!</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Hello Electron!</h1>
-    <p>This is a simple Electron application.</p>
-    <script src="renderer.js"></script>
-</body>
-</html>
+<template>
+    <div>
+      <input v-model="inputData" type="text" placeholder="Enter data">
+      <p>{{ receivedMessage }}</p>
+      <button @click="sendData">Send Data</button>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    data() {
+      return {
+        inputData: '',
+        receivedMessage: ''
+      };
+    },
+    mounted() {
+    this.$electron.ipcRenderer.on('responseData', (event, message) => {
+      this.receivedMessage = message;
+    });
+  },
+    methods: {
+      sendData() {
+        this.$electron.ipcRenderer.send('sendData', this.inputData);
+      }
+    }
+  };
+  </script>
+  
