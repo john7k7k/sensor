@@ -17,7 +17,7 @@ export default {
     window.electronApi.on('data', (event, arg) => {
       alert('Received message from main process:' + arg);
     });
-    window.electronApi.send('data', 'adf');
+    window.electronApi.send('data', '');
   },
   components: {  },
   data: () => ({
