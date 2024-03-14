@@ -1,6 +1,6 @@
 <template>
     <div class="box">
-        <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
+        <v-img src="../assets/sgslogo.jpg" alt="logo" width="150" class="logoimage" ></v-img>
         <v-btn class="btnword" size="50" icon="mdi mdi-download"></v-btn>
         <v-btn class="btnword" size="50" icon="mdi mdi-file-cog"></v-btn>
     </div>
@@ -29,8 +29,8 @@
   export default {
     data() {
       return {
-        tab: 'one', // 設置默認的選項卡值
-        chartInstance: null // 添加一個用於存儲圖表實例的屬性
+        tab: 'one', 
+        chartInstance: null 
       }
     },
     mounted() {

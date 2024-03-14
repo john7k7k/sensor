@@ -13,12 +13,18 @@
 export default {
   name: 'App',
   mounted() {
-    this.$router.push('/home');
-    window.electronApi.on('data', (event, arg) => {
-      alert('Received message from main process:' + arg);
-    });
-    window.electronApi.send('data', '');
-  },
+  this.$router.push('/home');
+  window.electronApi.on('init', (event, data) => {
+    this.handleReceivedData(JSON.parse(data));
+  });
+  window.electronApi.send('init', JSON.stringify({}));
+},
+methods: {
+  handleReceivedData(data) {
+    console.log('Received data from main process:', data);
+    this.receivedData = data; 
+  }
+},
   components: {  },
   data: () => ({
     //

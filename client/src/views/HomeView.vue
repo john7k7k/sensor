@@ -19,7 +19,7 @@
       </div>
       <div class="titalword">Click on the following buttons to view the information you requeted</div>
       <div class="box">
-        <DataCards v-for="num in filteredData" :key="num" :chartId="'myChart' + num" :sensornum="num"></DataCards>
+        <DataCards v-for="num in filteredData" :key="num" :chartId="'myChart' + num"   :sensornum="num"></DataCards>
       </div>
     </div>
   </div>
@@ -32,9 +32,11 @@
 }
 .item1{
   width: 15%;
+  position: fixed;
 }
 .item2{
   width: 85%;
+  margin-left: 15%;
 }
 .tital{
   font-size: 40px;

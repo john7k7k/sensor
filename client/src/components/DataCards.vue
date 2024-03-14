@@ -1,7 +1,7 @@
 <template>
   <v-card class="cardbg">
     <div class="box1">
-      <div class="circle"><span class="mdi mdi-clock-outline icon"></span></div>
+      <div class="circle"><span class="mdi mdi-alpha-s-circle-outline icon"></span></div>
       <div class="sensornum font-weight-bold">{{ sensornum }}</div>
     </div>
     <v-tabs v-model="tab" class="tabsbg">
@@ -35,7 +35,29 @@
           <v-select :items="items" density="compact" label="Time" class="selecttime" rounded="xl" variant="solo-filled"></v-select>
         </div>
       </v-window-item>
-      <v-window-item value="two">Two</v-window-item>
+      <v-window-item value="two">
+        <div class="box2">
+          <div class="circle"><span class="mdi mdi-clock-outline icon"></span></div>
+          <div>
+            <div class="box2tital">Total Work</div>
+            <div class="box2word font-weight-bold">00:03:45:16</div>
+          </div>
+        </div>
+        <canvas :id="chartId"></canvas>
+        <div class="bigbox">
+          <div class="box3">
+          <div class="circle"><span class="mdi mdi-water-outline icon"></span></div>
+          <div>
+            <div class="box3tital">Current Humidity</div>
+            <div class="box4">
+              <div class="box2word font-weight-bold">23</div>
+              <div class="box4unit font-weight-bold">%RH</div>
+            </div>
+          </div>
+          </div>
+          <v-select :items="items" density="compact" label="Time" class="selecttime" rounded="xl" variant="solo-filled"></v-select>
+        </div>
+      </v-window-item>
     </v-window>
   </v-card>
 </template>
@@ -188,8 +210,6 @@ export default {
           borderWidth: 1 // 设置边框宽度
         }]
       };
-
-      // 如果圖表實例已存在，則先摧毀它以防止重複創建
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
@@ -199,7 +219,7 @@ export default {
         type: 'line',
         data: data,
       });
-    }
+    },
   }
 }
 </script>
