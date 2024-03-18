@@ -1,6 +1,6 @@
 <template>
     <div class="box">
-        <v-img src="../assets/sgslogo.jpg" alt="logo" width="150" class="logoimage" ></v-img>
+        <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
         <v-btn class="btnword" size="50" icon="mdi mdi-download"></v-btn>
         <v-btn class="btnword" size="50" icon="mdi mdi-file-cog"></v-btn>
     </div>
