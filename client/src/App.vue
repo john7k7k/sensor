@@ -2,6 +2,7 @@
   <v-app   class="App">
     
     <v-main class="main">
+      
       <meta name=”viewport” content="width=device-width, initial-scale=1.0">
       <router-view/>
     </v-main >
@@ -14,20 +15,12 @@ export default {
   name: 'App',
   mounted() {
   this.$router.push('/home');
-  window.electronApi.on('init', (event, data) => {
-    this.handleReceivedData(JSON.parse(data));
-  });
-  window.electronApi.send('init', JSON.stringify({}));
+  
 },
-methods: {
-  handleReceivedData(data) {
-    console.log('Received data from main process:', data);
-    this.receivedData = data; 
-  }
-},
+
   components: {  },
   data: () => ({
-    //
+    
   }),
 }
 </script>

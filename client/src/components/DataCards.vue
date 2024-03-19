@@ -1,61 +1,64 @@
 <template>
   <v-card class="cardbg">
     <div class="box1">
-      <div class="circle"><span class="mdi mdi-alpha-s-circle-outline icon"></span></div>
+      <div class="imagebox">
+        <v-img src="../assets/溫度器圖標1.png"  alt="logo"  class="sensorimage" ></v-img>
+      </div>
       <div class="sensornum font-weight-bold">{{ sensornum }}</div>
     </div>
-    <v-tabs v-model="tab" class="tabsbg">
-      <v-tab value="one" class="tabsSet" :class="{ activeTab: tab === 'one' }"><div class="wordcss">Temperature</div></v-tab>
-      <v-tab value="two" class="tabsSet" :class="{ activeTab: tab === 'two' }"><div class="wordcss">Humidity</div></v-tab>
+    <v-tabs v-model="tab" class="tabsbg" @click="createChart">
+      <v-tab value="one" class="tabsSet" :class="{ activeTab: tab === 'one' }" density="compact"><div class="wordcss">Temperature</div></v-tab>
+      <v-tab value="two" class="tabsSet" :class="{ activeTab: tab === 'two' }" density="compact"><div class="wordcss">Humidity</div></v-tab>
     </v-tabs>
     <v-window v-model="tab" class="tabwindow">
       <v-window-item value="one">
         <div class="box2">
-          <div class="circle"><span class="mdi mdi-clock-outline icon"></span></div>
+          <div class="circle"><span class="mdi mdi-clock-time-four-outline circleword"></span></div>
           <div>
             <div class="box2tital">Total Work</div>
-            <div class="box2word font-weight-bold">00:03:45:16</div>
+            <div class="box2word font-weight-bold">{{ totalTime }}</div>
           </div>
         </div>
         <canvas :id="chartId"></canvas>
         <div class="bigbox">
+          
           <div class="box3">
-          <div class="circle"><span class="mdi mdi-thermometer-low icon"></span></div>
+            <div class="circle"><span class="mdi mdi-thermometer-low icon"></span></div>
           <div>
             <div class="box3tital">Current Temperature</div>
             <div class="box4">
-              <div class="box2word font-weight-bold">23</div>
+              <div class="box2word font-weight-bold">{{ displayTemData }}</div>
               <div class="box4unit font-weight-bold">°C</div>
               <div class="box2word font-weight-bold">|</div>
-              <div class="box2word font-weight-bold">73</div>
+              <div class="box2word font-weight-bold">{{ Number((displayTemData * 9/5 + 32).toFixed(1)) }}</div>
               <div class="box4unit font-weight-bold">°F</div>
             </div>
           </div>
           </div>
-          <v-select :items="items" density="compact" label="Time" class="selecttime" rounded="xl" variant="solo-filled"></v-select>
+          <v-select v-model="selectedTemtime" :items="items" density="compact"  class="selecttime" rounded="xl" variant="solo-filled" ></v-select>
         </div>
       </v-window-item>
       <v-window-item value="two">
         <div class="box2">
-          <div class="circle"><span class="mdi mdi-clock-outline icon"></span></div>
+          <div class="circle"><span class="mdi mdi-clock-time-four-outline circleword"></span></div>
           <div>
             <div class="box2tital">Total Work</div>
             <div class="box2word font-weight-bold">00:03:45:16</div>
           </div>
         </div>
-        <canvas :id="chartId"></canvas>
+        <canvas :id="secondId"></canvas>
         <div class="bigbox">
           <div class="box3">
           <div class="circle"><span class="mdi mdi-water-outline icon"></span></div>
           <div>
             <div class="box3tital">Current Humidity</div>
             <div class="box4">
-              <div class="box2word font-weight-bold">23</div>
+              <div class="box4word font-weight-bold">{{ displayHumData }}</div>
               <div class="box4unit font-weight-bold">%RH</div>
             </div>
           </div>
           </div>
-          <v-select :items="items" density="compact" label="Time" class="selecttime" rounded="xl" variant="solo-filled"></v-select>
+          <v-select v-model="selectedHumtime" :items="items" density="compact"  class="selecttime" rounded="xl" variant="solo-filled"></v-select>
         </div>
       </v-window-item>
     </v-window>
@@ -63,20 +66,32 @@
 </template>
 
 <style scoped>
+.sensorimage{
+  position: relative;
+  bottom: 4px;
+}
 .cardbg{
     width: 30%;
-    height: 500px;
+    height: 490px;
     border-radius: 20px;
     background-color: wihte; 
     padding: 2% 3%;
     margin-right: 3%;
-    margin-top: 2%;
+    margin-top: 3%;
     }
+.imagebox{
+  width: 35px;
+  height: 35px;
+  border-radius: 50%; 
+  margin-right: 5%;
+}
 .box1{
   display: flex;
   width: 100%;
   height: 12%;
   align-items: center;
+  position: relative;
+  bottom: 1px;
 }
 .sensornum{
   font-size: 20px;
@@ -92,21 +107,22 @@
   font-size: 10px;
   color: #757575;
   position: relative;
-  top:5px;
+  top: 4px;
 }
-.box2word , .box3word{
+.box2word , .box3word,.box4word{
   font-size: 20px;
+  position: relative;
+  top: 1.5px;
 }
 .bigbox{
   display: flex;
   width: 100%;
-  height: 40%;
+  height: 45%;
   align-items: center;
-  justify-content: space-between;
 }
 .box3{
   display: flex;
-  width: 50%;
+  width: 65%;
   height: 30%;
   align-items: center;
   margin-top: 5%;
@@ -116,11 +132,17 @@
   letter-spacing: 2px;
   align-items: center;
   width: 100%;
+  height: 100%;
 }
+
 .box4unit{
   font-size: 12px;
   position: relative;
-  bottom:3px;
+  bottom:1.5px;
+}
+.circleword{
+  transform: scale(1.5);
+  color: white;
 }
 .circle {
   display: flex; 
@@ -140,22 +162,29 @@
 .tabsbg{
   background-color: rgb(242, 241, 241);
   width: 100%;
-  height: 11.5%;
+  height: 11%;
   border-radius: 40px;
   margin: auto;
+  position: relative;
+  top: 3.5px;
+  display: flex;
+  align-items: center;
 }
 .tabsSet{
-  width: 40%;
+  width: 43%;
   margin: auto;
   color: transparent;
+  font-size: small;
 }
 .tabwindow{
   height: 100%;
 }
 .activeTab {
   background-color: white;
-  transform: scale(0.85);
+  transform: scale(0.9);
+  width: 50%;
   border-radius: 20px;
+  font-size: small;
   text-decoration-line: none;
   
 }
@@ -165,7 +194,8 @@
 .selecttime{
   max-width: 150px;
   max-height: 30px;
-  transform: scale(0.8);
+  position: relative;
+  top: 1px;
 }
 </style>
 
@@ -178,36 +208,71 @@ export default {
       type: String,
       required: true
     },
+    secondId: {
+      type: String,
+      required: true
+    },
     sensornum:{
       type: String,
+      required: true
+    },
+    totalTime:{
+      type: String,
+      required: true
+    },
+    sensorTem:{
+      type: Array,
+      required: true
+    },
+    sensorHum:{
+      type: Array,
       required: true
     },
   },
   data() {
     return {
-      tab: 'one', // 設置默認的選項卡值
-      chartInstance: null, // 添加一個用於存儲圖表實例的屬性
+      tab: 'one', 
+      chartInstance: null, 
       items: [
           '00:00', '06:00', '12:00', '18:00', '23:59'
         ],
+      selectedTemtime:'Now',
+      selectedHumtime:'Now',
     }
   },
   mounted() {
-    this.drawChart();
+    this.createChart();
+  },
+  computed: {
+    displayTemData() {
+      if (this.selectedTemtime !== 'Now') {
+        const index = this.items.indexOf(this.selectedTemtime);
+        return this.sensorTem[index];
+      } else {
+        return this.sensorTem[this.sensorTem.length - 1];
+      }
+    },
+    displayHumData() {
+      if (this.selectedHumtime !== 'Now') {
+        const index = this.items.indexOf(this.selectedHumtime);
+        return this.sensorHum[index];
+      } else {
+        return this.sensorHum[this.sensorHum.length - 1];
+      }
+    }
   },
   methods: {
-    drawChart() {
-      const chartElement = document.getElementById(this.chartId); // 使用传入的chartId获取元素
+    createChart() {
+      let chartId = this.tab === 'one' ? this.chartId : this.secondId;
+      const chartElement = document.getElementById(chartId);
       const data = {
-        labels: [
-          '00:00', '06:00', '12:00', '18:00', '23:59'
-        ],
+        labels: ['00:00', '06:00', '12:00', '18:00', '23:59'],
         datasets: [{
-          label: 'Temperature',
-          data: [20,30,32,25,18],
-          backgroundColor: '#E53935', // 设置背景色
-          borderColor: '#E53935', // 设置边框色
-          borderWidth: 1 // 设置边框宽度
+          label: this.tab === 'one' ? 'Temperature' : 'Humidity',
+          data: this.tab === 'one' ? this.sensorTem : this.sensorHum,
+          backgroundColor: this.tab === 'one' ? '#E53935' : '#2196F3',
+          borderColor: this.tab === 'one' ? '#E53935' : '#2196F3',
+          borderWidth: 1
         }]
       };
       if (this.chartInstance) {
@@ -218,6 +283,13 @@ export default {
       this.chartInstance = new Chart(chartElement, {
         type: 'line',
         data: data,
+        options: {
+          layout: {
+            padding: {
+              top: -10
+            }
+          }
+        }
       });
     },
   }
