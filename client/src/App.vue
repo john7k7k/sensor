@@ -15,13 +15,14 @@ export default {
   name: 'App',
   mounted() {
   this.$router.push('/home');
-  
+  window.electronApi.send('init', JSON.stringify({}));
 },
 
   components: {  },
   data: () => ({
     
   }),
+
 }
 </script>
 

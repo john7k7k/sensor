@@ -14,14 +14,14 @@ function createWindow() {
     }
   });
   win.loadFile(path.join(__dirname, 'public', 'index.html'));
-  const port = new SerialPort({ path: 'COM11', baudRate: 9600 });
-  port.write('87\n');
-  port.on('data', (data) => {
-    console.log('ack ' + data);
-  })
-  win.on('closed', () => {
-    port.close();
-  });
+  // const port = new SerialPort({ path: 'COM11', baudRate: 9600 });
+  // port.write('87\n');
+  // port.on('data', (data) => {
+  //   console.log('ack ' + data);
+  // })
+  // win.on('closed', () => {
+  //   port.close();
+  // });
 }
 pipe(ipcMain);
 app.on('ready', createWindow);
