@@ -16,7 +16,7 @@ export default {
   mounted() {
   this.$router.push('/home');
   // window.electronApi.send('init', JSON.stringify({}));
-  window.electronApi.send('download', JSON.stringify({
+  window.electronApi.send('getMap', JSON.stringify({
     selects: ["1", "2"]
   }));
 },

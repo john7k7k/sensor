@@ -13,7 +13,7 @@ module.exports = ( ipcMain ) => {
                 })
             })))
             console.log(convertSender(resData)[0].data);
-            e.sender.send('data', JSON.stringify(convertSender(resData)));
+            e.sender.send('init', JSON.stringify(convertSender(resData)));
         })
     });
 }

@@ -16,6 +16,6 @@ module.exports = ( ipcMain ) => {
         childProcess.on('close', (code) => {
         console.log(`error ${code}`);
         });
-        e.sender.send('data', {});
+        e.sender.send('search', {});
     });
 }
