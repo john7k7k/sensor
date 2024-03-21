@@ -1,4 +1,4 @@
 // 通道: download
 window.electronApi.send('download', JSON.stringify({
-    description: '39-78'
+    selects: ["1", "3"]
 }));

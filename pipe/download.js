@@ -3,11 +3,14 @@ const { spawn } = require('child_process');
 const { SerialPort } = require('serialport');
 const path = require('path');
 const test = require('./test');
+let exeOut = 0;
 function convertCSV(rawData){
     const lines = rawData.split('\n');
-    const header = [lines[0],lines[1],lines[2]].join('\n')
-    const name = lines[4].replace('Air Temp ( XC)', 'Temp').replace('Humidity (%RH)', 'Humidity').replace('Elapsed  Time', 'Elapsed_Time').replace(/\s+/g, ',');
-    const data = lines.slice(5).map(line => line.replace(/\s+/g, ','));
+    const header = [lines[0],lines[1],lines[2], lines[3]].join('\n')
+    const name = lines[5].replace('Air Temp ( XC)', 'Temp').replace('Humidity (%RH)', 'Humidity').replace('Elapsed  Time', 'Elapsed_Time').replace(/\s+/g, ',');
+    const data = lines.slice(6).map(line => line.replace(/\s+/g, ','));
+    data.pop();
+    data.pop();
     const csvData = [name, ...data].join('\n');
     return [ header, csvData ];
 }
@@ -29,10 +32,10 @@ function updateCSV(path, data){
         file = String(file).split('\n');
         file[0] = data[0];
         let lastIndex = file.at(-1).split(',')[0];
-        data.slice(4).forEach((row, index) => {
-            data[index+4] = ++lastIndex + data[index+4].slice(1);
+        data.slice(5).forEach((row, index) => {
+            data[index+5] = ++lastIndex + data[index+5].slice(1);
         });
-        file.push(...(data.slice(4)))
+        file.push(...(data.slice(5)))
         saveCSV(path ,file.join('\n'));
     })
     
@@ -46,7 +49,10 @@ function callExe(call = true){
         const childProcess = spawn(exePath);
         childProcess.stdout.on('data', (data) => {
             console.log(`out: ${data}`);
-            resolve(String(data));
+            if(!exeOut){
+                exeOut = String(data);
+            }
+            else exeOut += '\n' + String(data);
         });
         childProcess.stderr.on('data', (data) => {
             console.error(`err: ${data}`);
@@ -54,7 +60,7 @@ function callExe(call = true){
         });
         childProcess.on('close', (code) => {
             console.log(`error ${code}`);
-            reject(`error ${code}`);
+            resolve(exeOut);
         });
     })
 }
@@ -80,22 +86,29 @@ function getHeader(data){
 
 module.exports = ( ipcMain ) => {
     ipcMain.on('download', async (e, mes) => {
-        JSON.parse(mes);
-        const MCUack = await chooseSensor(mes.description);
-        if(!MCUack) return e.sender.send('download', 'MCU not ack');
-        let exeData = await callExe(false);
-        if(exeData === 'test') exeData = require('./test.js')[1];
-        if(!exeData) return e.sender.send('download', 'Script not return data');
-        fs.readdir('datas', (err, fileNames) => {
-            let description = mes.description;
-            if(!description) description = 'data';
-            if(fileNames.find(fileName => fileName === description + '.csv')){
-                updateCSV(path.join('datas/', description + '.csv'), exeData );
-            }
-            else{
-                saveCSV(`datas/${description}.csv`, exeData);
-            }
-        })
+        mes = JSON.parse(mes);
+        let resData = {};
+        for(let selectInd in mes.selects){
+            let select = mes.selects[selectInd];
+            // const MCUack = await chooseSensor(select);
+            // if(!MCUack){
+            //    resData[select] = 'MCU  not ack';
+            //    continue;
+            // } ;
+            let exeData = await callExe(true);
+            if(exeData === 'test') exeData = require('./test.js')[1];
+            if(!exeData) return e.sender.send('download', 'Script not return data');
+            fs.readdir('datas', (err, fileNames) => {
+                let description = exeData.split('\n')[2].split(':')[1].slice(1, 6);
+                if(!description) description = 'data';
+                if(fileNames.find(fileName => fileName === description + '.csv')){
+                    updateCSV(path.join('datas/', description + '.csv'), exeData );
+                }
+                else{
+                    saveCSV(`datas/${description}.csv`, exeData);
+                }
+            })
+        }
         e.sender.send('data', {});
     });
 }
