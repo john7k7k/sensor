@@ -1,11 +1,10 @@
 const fs = require('fs');
-const { spawn } = require('child_process');
 const { SerialPort } = require('serialport');
 const path = require('path');
 const test = require('./test');
 const decMapf = require('./tool/decMap.js');
+const { callExe } =  require('./tool/exe.js');
 
-let exeOut = 0;
 function convertCSV(rawData){
     const lines = rawData.split('\n');
     const header = [lines[0],lines[1],lines[2], lines[3]].join('\n')
@@ -43,30 +42,6 @@ function updateCSV(path, data){
     
 }
 
-function callExe(exePath ,call = true){
-    if(!call) return 'test';
-    return new Promise((resolve, reject) => {
-        const { spawn } = require('child_process');
-        const childProcess = spawn(exePath);
-        childProcess.stdout.on('data', (data) => {
-            console.log(`out: ${data}`);
-            if(!exeOut){
-                exeOut = String(data);
-            }
-            else exeOut += '\n' + String(data);
-        });
-        childProcess.stderr.on('data', (data) => {
-            console.error(`err: ${data}`);
-            reject(`err: ${data}`)
-        });
-        childProcess.on('close', (code) => {
-            console.log(`error ${code}`);
-            resolve(exeOut);
-            exeOut = 0;
-        });
-    })
-}
-
 function chooseSensor(description){
     return new Promise((resolve, reject) => {
         try{
@@ -97,7 +72,7 @@ module.exports = ( ipcMain ) => {
             //    continue;
             // } ;
             resData[select] = {};
-            let exeData = await callExe('loading_scg/loading.exe');
+            let exeData = await callExe('loading.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
             if(!exeData) {
                 resData[select].state = 'can not call exe'

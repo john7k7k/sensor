@@ -1,35 +1,7 @@
-const fs = require('fs');
-const { spawn } = require('child_process');
 const { SerialPort } = require('serialport');
-const path = require('path');
-const test = require('./test');
 const decMapf = require('./tool/decMap.js');
-
-let exeOut = 0;
-
-function callExe(exePath ,call = true){
-    if(!call) return 'test';
-    return new Promise((resolve, reject) => {
-        const { spawn } = require('child_process');
-        const childProcess = spawn(exePath);
-        childProcess.stdout.on('data', (data) => {
-            console.log(`out: ${data}`);
-            if(!exeOut){
-                exeOut = String(data);
-            }
-            else exeOut += '\n' + String(data);
-        });
-        childProcess.stderr.on('data', (data) => {
-            console.error(`err: ${data}`);
-            reject(`err: ${data}`)
-        });
-        childProcess.on('close', (code) => {
-            console.log(`error ${code}`);
-            resolve(exeOut);
-            exeOut = 0;
-        });
-    })
-}
+const { callExe } =  require('./tool/exe.js');
+const test = require('./test');
 
 function chooseSensor(description){
     return new Promise((resolve, reject) => {
@@ -46,9 +18,6 @@ function chooseSensor(description){
     })
 }
 
-
-
-
 module.exports = ( ipcMain ) => {
     ipcMain.on('scan', async (e, mes) => {
         mes = JSON.parse(mes);
@@ -60,7 +29,7 @@ module.exports = ( ipcMain ) => {
             //    resData[select].state = 'MCU  not ack';
             //    continue;
             // } ;
-            let exeData = await callExe('loading_scg/get_property.exe');
+            let exeData = await callExe('get_property.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
             if(!exeData) {
                 resData[select].state = 'can not call exe'
@@ -74,5 +43,3 @@ module.exports = ( ipcMain ) => {
         e.sender.send('scan', JSON.stringify(resData));
     });
 }
-
-
