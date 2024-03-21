@@ -1,5 +1,5 @@
 const init = require("./init");
-const search = require('./data');
+const search = require('./search');
 const download = require('./download');
 
 module.exports = (ipcMain) => {

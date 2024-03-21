@@ -15,10 +15,10 @@ export default {
   name: 'App',
   mounted() {
   this.$router.push('/home');
-  window.electronApi.send('init', JSON.stringify({}));
-  // window.electronApi.send('download', JSON.stringify({
-  //   selects: ["1", "2"]
-  // }));
+  // window.electronApi.send('init', JSON.stringify({}));
+  window.electronApi.send('download', JSON.stringify({
+    selects: ["1", "2"]
+  }));
 },
 
   components: {  },

@@ -3,6 +3,8 @@ const { spawn } = require('child_process');
 const { SerialPort } = require('serialport');
 const path = require('path');
 const test = require('./test');
+const decMapf = require('./tool/decMap.js');
+
 let exeOut = 0;
 function convertCSV(rawData){
     const lines = rawData.split('\n');
@@ -30,7 +32,7 @@ function updateCSV(path, data){
     data = convertCSV(data).join('\n').split('\n');
     fs.readFile(path, (err, file)=>{
         file = String(file).split('\n');
-        file[0] = data[0];
+        file[1] = data[1];
         let lastIndex = file.at(-1).split(',')[0];
         data.slice(5).forEach((row, index) => {
             data[index+5] = ++lastIndex + data[index+5].slice(1);
@@ -41,11 +43,10 @@ function updateCSV(path, data){
     
 }
 
-function callExe(call = true){
+function callExe(exePath ,call = true){
     if(!call) return 'test';
     return new Promise((resolve, reject) => {
         const { spawn } = require('child_process');
-        let exePath = 'loading_scg/loading.exe';
         const childProcess = spawn(exePath);
         childProcess.stdout.on('data', (data) => {
             console.log(`out: ${data}`);
@@ -61,6 +62,7 @@ function callExe(call = true){
         childProcess.on('close', (code) => {
             console.log(`error ${code}`);
             resolve(exeOut);
+            exeOut = 0;
         });
     })
 }
@@ -80,8 +82,7 @@ function chooseSensor(description){
     })
 }
 
-function getHeader(data){
-}
+
 
 
 module.exports = ( ipcMain ) => {
@@ -92,14 +93,20 @@ module.exports = ( ipcMain ) => {
             let select = mes.selects[selectInd];
             // const MCUack = await chooseSensor(select);
             // if(!MCUack){
-            //    resData[select] = 'MCU  not ack';
+            //    resData[select].state = 'MCU  not ack';
             //    continue;
             // } ;
-            let exeData = await callExe(true);
+            resData[select] = {};
+            let exeData = await callExe('loading_scg/loading.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
-            if(!exeData) return e.sender.send('download', 'Script not return data');
-            fs.readdir('datas', (err, fileNames) => {
-                let description = exeData.split('\n')[2].split(':')[1].slice(1, 6);
+            if(!exeData) {
+                resData[select].state = 'can not call exe'
+            };
+            console.log(exeData)
+            let description = exeData.split('\n')[2].split(':')[1].slice(1, 6);
+            decMapf.updateDecMap(select, description);
+            resData[select].description = description;
+            fs.readdir('datas', (err, fileNames) => {  
                 if(!description) description = 'data';
                 if(fileNames.find(fileName => fileName === description + '.csv')){
                     updateCSV(path.join('datas/', description + '.csv'), exeData );
@@ -109,7 +116,8 @@ module.exports = ( ipcMain ) => {
                 }
             })
         }
-        e.sender.send('data', {});
+        console.log(resData)
+        e.sender.send('data', JSON.stringify(resData));
     });
 }
 
