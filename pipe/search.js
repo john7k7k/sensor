@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 
 module.exports = ( ipcMain ) => {
-    ipcMain.on('data', (e, mes) => {
+    ipcMain.on('search', (e, mes) => {
         console.log(mes);
         let exePath = 'd:\\ntut\\power\\elec\\a.exe';
         exePath = 'loading_scg/loading.exe';
