@@ -57,13 +57,11 @@ function chooseSensor(description){
     })
 }
 
-
-
-
 module.exports = ( ipcMain ) => {
     ipcMain.on('download', async (e, mes) => {
         mes = JSON.parse(mes);
         let resData = {};
+        let decMap = await decMapf.getDecMap();
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
             // const MCUack = await chooseSensor(select);
@@ -74,11 +72,19 @@ module.exports = ( ipcMain ) => {
             resData[select] = {};
             let exeData = await callExe('loading.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
-            if(!exeData) {
-                resData[select].state = 'can not call exe'
+            else if(exeData.split('\n').length < 3) {
+                resData[select].state = 'call exe error, please check connect';
+                resData[select].description = decMap[select];
+                continue;
             };
             console.log(exeData)
             let description = exeData.split('\n')[2].split(':')[1].slice(1, 6);
+            if(mes.mode === "check"){
+                if((await decMapf.getDecMap())[select] !== description){
+                    resData[select].state = 'description is not original, the new one is ' + description;
+                    continue;
+                }
+            }
             decMapf.updateDecMap(select, description);
             resData[select].description = description;
             fs.readdir('datas', (err, fileNames) => {  

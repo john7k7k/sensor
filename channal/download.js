@@ -1,6 +1,7 @@
 // 通道: download
 window.electronApi.send('download', JSON.stringify({
-    selects: ["1", "3"]
+    selects: ["1", "3"],
+    mode: "check" //"anyway"
 }));
 
 window.electronApi.on('download', (e, data) => { //data為回傳資料

@@ -22,8 +22,10 @@ module.exports = ( ipcMain ) => {
     ipcMain.on('scan', async (e, mes) => {
         mes = JSON.parse(mes);
         let resData = {};
+        let decMap = await decMapf.getDecMap();
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
+            resData[select] = {};
             // const MCUack = await chooseSensor(select);
             // if(!MCUack){
             //    resData[select].state = 'MCU  not ack';
@@ -31,8 +33,10 @@ module.exports = ( ipcMain ) => {
             // } ;
             let exeData = await callExe('get_property.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
-            if(!exeData) {
-                resData[select].state = 'can not call exe'
+            else if(exeData.split('\n').length < 3) {
+                resData[select].state = 'call exe error, please check connect';
+                resData[select].description = decMap[select];
+                continue;
             };
             console.log(exeData)
             let description = exeData.split('\n')[2].split(':')[1].slice(1, 6);
