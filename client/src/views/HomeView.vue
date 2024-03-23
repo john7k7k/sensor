@@ -1,7 +1,14 @@
 <template>
   <div class="home">
+    <div class="configureBackdrop" v-show="configureModal"></div>
+<div class="configureBox" v-show="configureModal">
+  <Configure @close-modal="closeConfigureModal"></Configure>
+</div>
     <div class="item1">
-      <Navbar></Navbar>
+      <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
+      <v-btn class="btnword" size="50" icon="mdi mdi-download"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="configureModal = true"></v-btn>
+      
     </div>
     <div class="item2">
       <div class="titalbox">
@@ -34,6 +41,18 @@
 .item1{
   width: 15%;
   position: fixed;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  align-items: center;
+}
+.logoimage{
+    margin-top: 5%;
+    margin-bottom: 30%;
+}
+.btnword{
+    font-size: 20px;
+    margin-top: 15%;
 }
 .item2{
   width: 85%;
@@ -68,16 +87,40 @@
   justify-content: start;
   flex-wrap: wrap;
 }
+.configureBox{
+  width: 70%;
+  height: 80%;
+  border-radius: 30px;
+  background-color: white;
+  position: absolute;
+  top: 15%;
+  left: 0;
+  right:0;
+  margin: auto;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.configureBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+  z-index: 1; /* 比配置框更低 */
+}
 </style>
 
 <script>
 import DataCards from '@/components/DataCards.vue'
-import Navbar from '@/components/Navbar.vue'
+import Configure from '@/components/Configure.vue'
 
 export default {
   name: 'HomeView',
   components: {
-    DataCards,Navbar
+    DataCards,Configure
   },
   data: () => ({
     sensorNumber:[],
@@ -86,6 +129,7 @@ export default {
     sensorHum:[],
     searchId:"",
     receivedData:'',
+    configureModal:false,
     data:[
         {
             ID: 'X1',
@@ -126,47 +170,16 @@ export default {
         {
             ID: 'X2',
             totalTime: '00:30:00',
-            data: [
-                {
-                    temperature: 30,
-                    humidity: 60,
-                    air: 'U',
-                    time: '2024/3/4 20:00:06'
-                },
-                {
-                    temperature: 30.1,
-                    humidity: 64,
-                    air: 'U',
-                    time: '2024/3/4 20:00:12'
-                },
-                {
-                    temperature: 30.4,
-                    humidity: 64.4,
-                    air: 'U',
-                    time: '2024/3/4 20:00:18'
-                },
-                {
-                    temperature: 30.1,
-                    humidity: 62,
-                    air: 'U',
-                    time: '2024/3/4 20:00:24'
-                },
-                {
-                    temperature: 31.1,
-                    humidity: 67,
-                    air: 'U',
-                    time: '2024/3/4 20:00:30'
-                }
-            ]
+            data:'',
         },
     ]
   }),
   mounted() {
     this.handleData(this.data);
-    /*window.electronApi.on('init', (e, data) => {
-    this.handleReceivedData(JSON.parse(data));
-  });
-  window.electronApi.send('init', JSON.stringify({}));*/
+      window.electronApi.on('init', (e, data) => {
+      this.handleReceivedData(JSON.parse(data));
+    });
+    window.electronApi.send('init', JSON.stringify({}));
 },
   computed: {
         filteredData() {
@@ -184,8 +197,7 @@ export default {
   methods: {
   handleReceivedData(data) {
     console.log('Received data from main process:', data);
-    alert(data[0].ID);
-    this.receivedData = data; 
+    this.data = data; 
   },
   handleData(data){
     for (var i = 0; i < data.length;i++){
@@ -200,7 +212,10 @@ export default {
       this.sensorTem.push(Temperatures);
       this.sensorHum.push(Humidity);
     }
-  }
+  },
+  closeConfigureModal() {
+      this.configureModal = false;
+  },
 },
 }
 </script>

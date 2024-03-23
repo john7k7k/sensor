@@ -94,7 +94,7 @@
   bottom: 1px;
 }
 .sensornum{
-  font-size: 20px;
+  font-size: 22px;
 }
 .box2{
   display: flex;
@@ -110,7 +110,7 @@
   top: 4px;
 }
 .box2word , .box3word,.box4word{
-  font-size: 20px;
+  font-size: 19.7px;
   position: relative;
   top: 1.5px;
 }
@@ -181,8 +181,8 @@
 }
 .activeTab {
   background-color: white;
-  transform: scale(0.9);
-  width: 50%;
+  transform: scale(1);
+  width: 45%;
   border-radius: 20px;
   font-size: small;
   text-decoration-line: none;
