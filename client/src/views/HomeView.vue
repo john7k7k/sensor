@@ -1,8 +1,16 @@
 <template>
   <div class="home">
-    <div class="configureBackdrop" v-show="configureModal || downloadModal"></div>
+    <div class="configureBackdrop" v-show="configureModal || downloadModal || getMapmodal || downloadResultmodal"></div>
     <div class="configureBox" v-show="configureModal">
       <Configure @close-modal="closeConfigureModal"></Configure>
+    </div>
+    <div class="resultBox" v-show="downloadResultmodal">
+      <loading v-if="Downloading"></loading>
+      <div class="resultTital" v-if="!Downloading">Download results data sheet</div>
+      <div class="ResultTableBox" v-if="!Downloading">
+        <Table  border v-for="(num,index) in Downloaddata" :key="num" :columns="Resultcolumns" :data="Downloaddata[index]"></Table>
+      </div>
+      <v-btn class="dowloadFinishBtn"  @click="downloadResultmodal = false" flat v-if="!Downloading">Confirm</v-btn>
     </div>
     <div class="downloadBox" v-show="downloadModal">
       <div class="downloadtitalBox">
@@ -17,8 +25,17 @@
           <v-radio class="checkboxWord" label="All" value="17" color="#E57373"></v-radio>
         </v-radio-group>
       </div>
-        
         <v-btn class="dowloadFinishBtn"  @click="Startdownload" flat>Download</v-btn>
+    </div>
+    <div class="getMapBox" v-show="getMapmodal">
+      <div class="downloadtitalBox">
+        <div class="downloadTital">Foot position and description comparison table</div>
+        <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="getMapmodal = false"></v-btn>
+      </div>
+      <div class="tableBox">
+        <Table border v-for="(num,index) in Mapdata" :key="num" :columns="columns" :data="Mapdata[index]"></Table>
+      </div>
+
     </div>
     <div class="item1">
       <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
@@ -182,16 +199,70 @@
   background-color: #E57373;
   color: white;
 }
+.getMapBox{
+  width: 65%;
+  height: 75%;
+  border-radius: 30px;
+  background-color: white;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right:0;
+  margin: auto;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+}
+.tableBox{
+  width: 100%;
+  height: 92%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.resultBox{
+  width: 65%;
+  height: 75%;
+  border-radius: 30px;
+  background-color: white;
+  position: absolute;
+  top: 5%;
+  bottom: 0;
+  left: 0;
+  right:0;
+  margin: auto;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+}
+.ResultTableBox{
+  width: 100%;
+  height: 85%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.resultTital{
+  font-size: 22px;
+  letter-spacing: 0.1px;
+  font-weight: bold;
+  position: relative;
+  top:2%;
+}
+
 </style>
 
 <script>
 import DataCards from '@/components/DataCards.vue'
 import Configure from '@/components/Configure.vue'
-
+import loading from '@/components/loading.vue'
 export default {
   name: 'HomeView',
   components: {
-    DataCards,Configure
+    DataCards,Configure,loading
   },
   data: () => ({
     sensorNumber:[],
@@ -204,6 +275,7 @@ export default {
     receivedData:'',
     configureModal:false,
     downloadModal:false,
+    getMapmodal:false,
     data:[
       {
         ID: "39-78",
@@ -219,14 +291,46 @@ export default {
     ],
     chooseDownloadPinName:["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15","16"],
     chooseDownloadPin:["", "", "", "", "", "", "", "", "", "", "", "","","","","",""],
-    Downloaddata:null,
+    columns: [
+                    {
+                        title: 'Pin',
+                        key: 'pin',
+                        width:"150"
+                    },
+                    {
+                        title: 'Description',
+                        key: 'mapID',
+                        width:"150"
+                    },
+                ],
+    Resultcolumns: [
+                    {
+                        title: 'Pin',
+                        key: 'pin',
+                        width:"150"
+                    },
+                    {
+                        title: 'Description',
+                        key: 'description',
+                        width:"150"
+                    },
+                    {
+                        title: 'State',
+                        key: 'state',
+                        width:"150"
+                    },
+                ],
+    Downloaddata:[],
+    Mapdata:[],
+    downloadResultmodal:false,
+    Downloading:true,
   }),
   mounted() {
-    this.handleData(this.data);
-    /*window.electronApi.on('init', (e, data) => {
+    //this.handleData(this.data);
+    window.electronApi.on('init', (e, data) => {
       this.handleReceivedData(JSON.parse(data));
     });
-    window.electronApi.send('init', JSON.stringify({}));*/
+    window.electronApi.send('init', JSON.stringify({}));
 },
   computed: {
         filteredData() {
@@ -301,6 +405,8 @@ updateChooseDownloadPin(index, value) {
     },
   Startdownload(){
     this.downloadModal = false;
+    this.downloadResultmodal = true;
+    this.Downloading = true;
     let downloadPin = [];
     for(let i=0; i<16; i++) {
       if(this.chooseDownloadPin[i] !== "") downloadPin.push(this.chooseDownloadPin[i]);
@@ -309,15 +415,67 @@ updateChooseDownloadPin(index, value) {
         selects: downloadPin,
         mode: "anyway" 
     }));
+    const processData = (data) => {
+      console.log('Received data from main process:', data);
+      if (Object.prototype.hasOwnProperty.call(data, 'descriptionMap')) {
+        delete data.descriptionMap;
+      }
+      const formattedData = Object.entries(data).map(([pin, item]) => ({
+        pin,
+        state: item.state || 'MCU not ack', 
+        description: item.description || 'Null', 
+      }));
+      if (formattedData.length > 8) {
+        this.Downloaddata = [formattedData.slice(0, 8), formattedData.slice(8)];
+      } else {
+        this.Downloaddata = [formattedData];
+      }
+      this.Downloading = false;
+    };
+    /*processData({
+        "1": { description: '39-24', state: 'download succfully' },
+        "3": { description: '', state: 'failed' },
+        "descriptionMap":{"1":"39-24","2":"","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"","11":"","12":"","13":"","14":"","15":"","16":""}
+    });*/
     window.electronApi.on('download', (e, data) => {
-      console.log('Received data from main process:', JSON.parse(data));
-      this.Downloaddata = JSON.parse(data);
+      processData(JSON.parse(data));
     });
-  },
-  Getmap(){
-
-  }
+    
 },
+
+  Getmap() {
+    this.getMapmodal = true;
+    let ret = null;
+    window.electronApi.send('getMap', JSON.stringify({}));
+    
+    window.electronApi.on('getMap', (e, data) => { 
+        console.log('Received data from main process:', JSON.parse(data));
+        ret = JSON.parse(data);
+        this.processMapData(ret);
+    });
+    /*let ret = {"1":"39-24","2":"39-79","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"","11":"","12":"","13":"","14":"","15":"","16":""};
+    this.processMapData(ret);*/
+},
+
+processMapData(ret) {
+    this.Mapdata = [];
+
+    let data = [];
+    for (let key in ret) {
+        if (Object.prototype.hasOwnProperty.call(ret, key)) {
+            let value = ret[key] !== "" ? ret[key] : "Null";
+            data.push({
+                pin: key,
+                mapID: value
+            });
+        }
+        if(data.length == 8) {
+          this.Mapdata.push(data);
+          data = [];
+        }
+    }
+}
+}
 }
 </script>
 

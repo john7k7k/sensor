@@ -34,9 +34,9 @@
       <ConfigurePage4 v-if="Step4show"></ConfigurePage4>
     </div>
     <div class="btnBox">
-      <v-btn rounded="xl" prepend-icon="mdi mdi-chevron-left" class="backbtnIcon" @click="Backpage"><div class="btnWord">Back</div></v-btn>
+      <v-btn  rounded="xl" prepend-icon="mdi mdi-chevron-left" class="backbtnIcon" @click="Backpage"><div class="btnWord">Back</div></v-btn>
       <v-btn v-if="!confirmBtnShow" rounded="xl" append-icon="mdi mdi-chevron-right" class="nextbtnIcon" @click="Nextpage"><div class="btnWord">Next</div></v-btn>
-      <v-btn v-if="confirmBtnShow" rounded="xl"  class="nextbtnIcon" ><div class="btnWord">Confirm</div></v-btn>
+      <v-btn v-if="confirmBtnShow" rounded="xl"  class="nextbtnIcon" @click="closeModal"><div class="btnWord">Confirm</div></v-btn>
     </div>
   </div>
 </template>
@@ -173,7 +173,7 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
       
       },
       Backpage(){
-        if(this.NowStep == 0) return;
+        if(this.NowStep == 1) return;
         this.NowStep -= 1;
         this.handleStepShow(this.NowStep);
       },
