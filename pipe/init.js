@@ -12,7 +12,7 @@ module.exports = ( ipcMain ) => {
                     resolve(0);
                 })
             })))
-            console.log(convertSender(resData)[0].data);
+            console.log(convertSender(resData));
             e.sender.send('init', JSON.stringify(convertSender(resData)));
         })
     });

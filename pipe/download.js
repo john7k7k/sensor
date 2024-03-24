@@ -4,6 +4,7 @@ const path = require('path');
 const test = require('./test');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
+const { chooseSensor } = require('./tool/port.js');
 
 function convertCSV(rawData){
     const lines = rawData.split('\n');
@@ -41,7 +42,7 @@ function updateCSV(path, data){
     })
     
 }
-
+/*
 function chooseSensor(description){
     return new Promise((resolve, reject) => {
         try{
@@ -55,7 +56,7 @@ function chooseSensor(description){
             })
         }catch(err){reject(err);}
     })
-}
+}*/
 
 module.exports = ( ipcMain ) => {
     ipcMain.on('download', async (e, mes) => {
@@ -64,15 +65,18 @@ module.exports = ( ipcMain ) => {
         let decMap = await decMapf.getDecMap();
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
-            // const MCUack = await chooseSensor(select);
-            // if(!MCUack){
-            //    resData[select].state = 'MCU  not ack';
-            //    continue;
-            // } ;
             resData[select] = {};
+            const MCUack = await chooseSensor(select);
+            if(!MCUack){
+               resData[select].state = 'MCU  not ack';
+               resData[select].description = decMap[select];
+               continue;
+            } ;
+            
             let exeData = await callExe('loading.exe');
+            console.log(exeData.split('\n').length);
             if(exeData === 'test') exeData = require('./test.js')[1];
-            else if(exeData.split('\n').length < 3) {
+            else if(exeData.split('\n').length < 4) {
                 resData[select].state = 'call exe error, please check connect';
                 resData[select].description = decMap[select];
                 continue;
@@ -82,6 +86,7 @@ module.exports = ( ipcMain ) => {
             if(mes.mode === "check"){
                 if((await decMapf.getDecMap())[select] !== description){
                     resData[select].state = 'description is not original, the new one is ' + description;
+                    resData[select].description = decMap[select];
                     continue;
                 }
             }
