@@ -2,7 +2,8 @@ const { SerialPort } = require('serialport');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
 const test = require('./test');
-
+const { chooseSensor }  = require('./tool/port.js')
+/*
 function chooseSensor(description){
     return new Promise((resolve, reject) => {
         try{
@@ -17,7 +18,7 @@ function chooseSensor(description){
         }catch(err){reject(err);}
     })
 }
-
+*/
 module.exports = ( ipcMain ) => {
     ipcMain.on('scan', async (e, mes) => {
         mes = JSON.parse(mes);
@@ -26,14 +27,14 @@ module.exports = ( ipcMain ) => {
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
             resData[select] = {};
-            // const MCUack = await chooseSensor(select);
-            // if(!MCUack){
-            //    resData[select].state = 'MCU  not ack';
-            //    continue;
-            // } ;
+            const MCUack = await chooseSensor(select);
+            if(!MCUack){
+               resData[select].state = 'MCU  not ack';
+               continue;
+            } ;
             let exeData = await callExe('get_property.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
-            else if(exeData.split('\n').length < 3) {
+            else if(exeData.split('\n').length < 4) {
                 resData[select].state = 'call exe error, please check connect';
                 resData[select].description = decMap[select];
                 continue;
