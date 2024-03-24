@@ -24,7 +24,7 @@
       <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
       <v-btn class="btnword" size="50" icon="mdi mdi-download" @click="downloadModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="configureModal = true"></v-btn>
-      <v-btn class="btnword" size="50" icon="mdi mdi-map-search" ></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-map-search" @click="Getmap"></v-btn>
       
     </div>
     <div class="item2">
@@ -222,11 +222,11 @@ export default {
     Downloaddata:null,
   }),
   mounted() {
-    this.handleData(this.data);
-    /*window.electronApi.on('init', (e, data) => {
+    //this.handleData(this.data);
+    window.electronApi.on('init', (e, data) => {
       this.handleReceivedData(JSON.parse(data));
     });
-    window.electronApi.send('init', JSON.stringify({}));*/
+    window.electronApi.send('init', JSON.stringify({}));
 },
   computed: {
         filteredData() {
@@ -313,6 +313,9 @@ updateChooseDownloadPin(index, value) {
       console.log('Received data from main process:', JSON.parse(data));
       this.Downloaddata = JSON.parse(data);
     });
+  },
+  Getmap(){
+    
   }
 },
 }
