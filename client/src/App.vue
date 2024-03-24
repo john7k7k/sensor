@@ -12,10 +12,14 @@
 export default {
   name: 'App',
   mounted() {
-    this.$router.push('/home');
-  },
-  components: {},
-  data: () => ({}),
+  this.$router.push('/home');
+  
+},
+
+  components: {  },
+  data: () => ({
+    
+  }),
 }
 </script>
 

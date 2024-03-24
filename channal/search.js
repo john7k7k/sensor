@@ -17,7 +17,7 @@ window.electronApi.send('search', JSON.stringify([
     },
 ,]));
 
-window.electronApi.on('init', (e, data) => { //data為回傳資料
+window.electronApi.on('search', (e, data) => { //data為回傳資料
     //回傳格式
     [
         {

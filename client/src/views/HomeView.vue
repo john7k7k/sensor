@@ -1,13 +1,30 @@
 <template>
   <div class="home">
-    <div class="configureBackdrop" v-show="configureModal"></div>
-<div class="configureBox" v-show="configureModal">
-  <Configure @close-modal="closeConfigureModal"></Configure>
-</div>
+    <div class="configureBackdrop" v-show="configureModal || downloadModal"></div>
+    <div class="configureBox" v-show="configureModal">
+      <Configure @close-modal="closeConfigureModal"></Configure>
+    </div>
+    <div class="downloadBox" v-show="downloadModal">
+      <div class="downloadtitalBox">
+        <div class="downloadTital">Select the pin you want to download</div>
+        <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="downloadModal = false"></v-btn>
+      </div>
+      <div class="choosePinBox">
+        <v-radio-group @click="toggleRadio(name)"  v-for="(name,index) in chooseDownloadPinName" :key="name" v-model="chooseDownloadPin[index]"  hide-details>
+          <v-radio class="checkboxWord" :label="name" :value="(index+1).toString()" color="#E57373" :input-value="chooseDownloadPin[index] === index+1"></v-radio>
+        </v-radio-group>
+        <v-radio-group  v-model="chooseDownloadPin[16]" @click="toggleRadio(17)"  hide-details>
+          <v-radio class="checkboxWord" label="All" value="17" color="#E57373"></v-radio>
+        </v-radio-group>
+      </div>
+        
+        <v-btn class="dowloadFinishBtn"  @click="Startdownload" flat>Download</v-btn>
+    </div>
     <div class="item1">
       <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
-      <v-btn class="btnword" size="50" icon="mdi mdi-download"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-download" @click="downloadModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="configureModal = true"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-map-search" ></v-btn>
       
     </div>
     <div class="item2">
@@ -27,7 +44,7 @@
       <div class="titalword">Click on the following buttons to view the information you requeted</div>
       <div class="box">
         <DataCards v-for="(num,index) in filteredData" :key="num" :chartId="'myChart' + num" :secondId="'secondChart' + num" 
-                    :sensornum="num" :totalTime="totalTime[index]" :sensorTem="sensorTem[index]" :sensorHum="sensorHum[index]"></DataCards>
+          :sensornum="num" :totalTime="totalTime[index]" :sensorTem="sensorTem[index]" :sensorHum="sensorHum[index]" :sensorTime="sensorTime[index]" :sensorDate="sensorDate[index]"></DataCards>
       </div>
     </div>
   </div>
@@ -108,8 +125,62 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
-  z-index: 1; /* 比配置框更低 */
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 1; 
+}
+.downloadBox{
+  width: 55%;
+  height: 45%;
+  border-radius: 30px;
+  background-color: white;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right:0;
+  margin: auto;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+}
+.downloadtitalBox{
+  width: 100%;
+  height: 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.downloadTital{
+  font-size: 22px;
+  letter-spacing: 0.1px;
+  font-weight: bold;
+}
+.closedownloadBtn{
+  font-size: 20px;
+  font-weight: bold;
+}
+.choosePinBox{
+  display: flex;
+  width: 100%;
+  height: 75%;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  right: 10px;
+  margin: 1.5% 0 ;
+}
+.checkboxWord{
+  width: 160px;
+  height: 25px;
+  color: black;
+  }
+.dowloadFinishBtn{
+  width: 40%;
+  margin: auto;
+  border-radius: 20px;
+  background-color: #E57373;
+  color: white;
 }
 </style>
 
@@ -127,59 +198,35 @@ export default {
     totalTime:[],
     sensorTem:[],
     sensorHum:[],
+    sensorTime:[],
+    sensorDate:[],
     searchId:"",
     receivedData:'',
     configureModal:false,
+    downloadModal:false,
     data:[
-        {
-            ID: 'X1',
-            totalTime: '00:30:00',
-            data: [
-                {
-                    temperature: 30,
-                    humidity: 60,
-                    air: 'U',
-                    time: '2024/3/4 20:00:06'
-                },
-                {
-                    temperature: 30.1,
-                    humidity: 64,
-                    air: 'U',
-                    time: '2024/3/4 20:00:12'
-                },
-                {
-                    temperature: 30.4,
-                    humidity: 64.4,
-                    air: 'U',
-                    time: '2024/3/4 20:00:18'
-                },
-                {
-                    temperature: 30.1,
-                    humidity: 62,
-                    air: 'U',
-                    time: '2024/3/4 20:00:24'
-                },
-                {
-                    temperature: 31.1,
-                    humidity: 67,
-                    air: 'U',
-                    time: '2024/3/4 20:00:30'
-                }
-            ]
-        },
-        {
-            ID: 'X2',
-            totalTime: '00:30:00',
-            data:'',
-        },
-    ]
+      {
+        ID: "39-78",
+        data: [
+          { temperature: 22.1, humidity: 67.7, air: 'W', time: '2024/3/18 10:48:24' },
+          { temperature: 22, humidity: 67.5, air: 'W', time: '2024/3/18 10:48:30' },
+          { temperature: 22.1, humidity: 68.1, air: 'W', time: '2024/3/18 10:48:36' },
+          { temperature: 22.1, humidity: 68, air: 'W', time: '2024/3/18 10:48:42' },
+          { temperature: 22.1, humidity: 68, air: 'W', time: '2024/3/18 10:48:48' },
+        ],
+        totalTime: "00:00:48"
+      }
+    ],
+    chooseDownloadPinName:["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15","16"],
+    chooseDownloadPin:["", "", "", "", "", "", "", "", "", "", "", "","","","","",""],
+    Downloaddata:null,
   }),
   mounted() {
     this.handleData(this.data);
-      window.electronApi.on('init', (e, data) => {
+    /*window.electronApi.on('init', (e, data) => {
       this.handleReceivedData(JSON.parse(data));
     });
-    window.electronApi.send('init', JSON.stringify({}));
+    window.electronApi.send('init', JSON.stringify({}));*/
 },
   computed: {
         filteredData() {
@@ -197,25 +244,76 @@ export default {
   methods: {
   handleReceivedData(data) {
     console.log('Received data from main process:', data);
-    this.data = data; 
+    this.handleData(data);
   },
-  handleData(data){
-    for (var i = 0; i < data.length;i++){
-      this.sensorNumber.push(this.data[i].ID);
-      this.totalTime.push(this.data[i].totalTime);
-      let Temperatures = [];
-      let Humidity = [];
-      for(var j = 0; j < data[i].data.length;j++){
-        Temperatures.push(this.data[i].data[j].temperature);
-        Humidity.push(this.data[i].data[j].humidity);
+  handleData(data) {
+    for (var i = 0; i < data.length; i++) {
+      this.sensorNumber.push(data[i].ID);
+      this.totalTime.push(data[i].totalTime);
+      let latestDayData = {
+        temperatures: [],
+        humidity: [],
+        time: [],
+        yearMonthDay: ""
+      };
+      let latestDate = new Date(0); 
+      for (var j = 0; j < data[i].data.length; j++) {
+        const currentDate = new Date(data[i].data[j].time);
+        if (currentDate > latestDate) {
+          latestDate = currentDate;
+          latestDayData.yearMonthDay = currentDate.toLocaleDateString();
+        }
+
+        latestDayData.temperatures.push(data[i].data[j].temperature);
+        latestDayData.humidity.push(data[i].data[j].humidity);
+        const timeParts = data[i].data[j].time.split(' ')[1].split(':');
+        const hourMinuteSecond = timeParts[0] + ':' + timeParts[1] + ':' + timeParts[2];
+        latestDayData.time.push(hourMinuteSecond);
       }
-      this.sensorTem.push(Temperatures);
-      this.sensorHum.push(Humidity);
+      this.sensorTem.push(latestDayData.temperatures);
+      this.sensorHum.push(latestDayData.humidity);
+      this.sensorTime.push(latestDayData.time);
+      this.sensorDate.push(latestDayData.yearMonthDay);
     }
   },
+
   closeConfigureModal() {
-      this.configureModal = false;
+    this.configureModal = false;
   },
+  toggleRadio(PinNum) {
+  PinNum = parseInt(PinNum) - 1;
+  if (PinNum === 16) {
+    if (this.chooseDownloadPin[PinNum] === "") {
+      this.chooseDownloadPin = Array.from({length: 17}, (_, index) => (index + 1).toString());
+    } else {
+      this.chooseDownloadPin = Array.from({length: 17}, () => "");
+    }
+  } else {
+    if (this.chooseDownloadPin[PinNum] !== "") {
+      this.chooseDownloadPin[PinNum] = "";
+    } else {
+      this.chooseDownloadPin[PinNum] = (PinNum + 1).toString();
+    }
+  }
+},
+updateChooseDownloadPin(index, value) {
+        this.chooseDownloadPin[index] = value ? (index + 1).toString() : "";
+    },
+  Startdownload(){
+    this.downloadModal = false;
+    let downloadPin = [];
+    for(let i=0; i<16; i++) {
+      if(this.chooseDownloadPin[i] !== "") downloadPin.push(this.chooseDownloadPin[i]);
+    }
+    window.electronApi.send('download', JSON.stringify({
+        selects: downloadPin,
+        mode: "anyway" 
+    }));
+    window.electronApi.on('download', (e, data) => {
+      console.log('Received data from main process:', JSON.parse(data));
+      this.Downloaddata = JSON.parse(data);
+    });
+  }
 },
 }
 </script>
