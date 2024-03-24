@@ -222,11 +222,11 @@ export default {
     Downloaddata:null,
   }),
   mounted() {
-    //this.handleData(this.data);
-    window.electronApi.on('init', (e, data) => {
+    this.handleData(this.data);
+    /*window.electronApi.on('init', (e, data) => {
       this.handleReceivedData(JSON.parse(data));
     });
-    window.electronApi.send('init', JSON.stringify({}));
+    window.electronApi.send('init', JSON.stringify({}));*/
 },
   computed: {
         filteredData() {
@@ -315,7 +315,7 @@ updateChooseDownloadPin(index, value) {
     });
   },
   Getmap(){
-    
+
   }
 },
 }
