@@ -16,10 +16,13 @@ export default {
   mounted() {
     this.$router.push('/home');
     // window.electronApi.send('init', JSON.stringify({}));
-    window.electronApi.send('download', JSON.stringify({
-      selects: ["1","2"],
-      mode:'anyway'
-    }));
+    setTimeout(() => {
+      window.electronApi.send('download', JSON.stringify({
+        selects: ["0", "8"],
+        mode:'anyway'
+      }));
+    },3000)
+    
   },
   components: {  },
   data: () => ({
