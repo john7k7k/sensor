@@ -35,7 +35,7 @@
             </div>
           </div>
           </div>
-          <v-select v-model="selectedTemtime" :items="items" density="compact"  class="selecttime" rounded="xl" variant="solo-filled" ></v-select>
+          <v-select v-model="selectedTemtime" :items="sensorTime" density="compact"  class="selecttime" rounded="xl" variant="solo-filled" ></v-select>
         </div>
       </v-window-item>
       <v-window-item value="two">
@@ -43,7 +43,7 @@
           <div class="circle"><span class="mdi mdi-clock-time-four-outline circleword"></span></div>
           <div>
             <div class="box2tital">Total Work</div>
-            <div class="box2word font-weight-bold">00:03:45:16</div>
+            <div class="box2word font-weight-bold">{{ totalTime }}</div>
           </div>
         </div>
         <canvas :id="secondId"></canvas>
@@ -58,7 +58,7 @@
             </div>
           </div>
           </div>
-          <v-select v-model="selectedHumtime" :items="items" density="compact"  class="selecttime" rounded="xl" variant="solo-filled"></v-select>
+          <v-select v-model="selectedHumtime" :items="sensorTime" density="compact"  class="selecttime" rounded="xl" variant="solo-filled"></v-select>
         </div>
       </v-window-item>
     </v-window>
@@ -94,7 +94,7 @@
   bottom: 1px;
 }
 .sensornum{
-  font-size: 20px;
+  font-size: 22px;
 }
 .box2{
   display: flex;
@@ -110,7 +110,7 @@
   top: 4px;
 }
 .box2word , .box3word,.box4word{
-  font-size: 20px;
+  font-size: 19.7px;
   position: relative;
   top: 1.5px;
 }
@@ -181,8 +181,8 @@
 }
 .activeTab {
   background-color: white;
-  transform: scale(0.9);
-  width: 50%;
+  transform: scale(1);
+  width: 45%;
   border-radius: 20px;
   font-size: small;
   text-decoration-line: none;
@@ -192,10 +192,11 @@
   color: black;
 }
 .selecttime{
-  max-width: 150px;
+  width: 45%;
   max-height: 30px;
   position: relative;
   top: 1px;
+
 }
 </style>
 
@@ -228,14 +229,20 @@ export default {
       type: Array,
       required: true
     },
+    sensorTime:{
+      type: Array,
+      required: true
+    },
+    sensorDate:{
+      type: String,
+      required: true
+    },
+    
   },
   data() {
     return {
       tab: 'one', 
       chartInstance: null, 
-      items: [
-          '00:00', '06:00', '12:00', '18:00', '23:59'
-        ],
       selectedTemtime:'Now',
       selectedHumtime:'Now',
     }
@@ -246,16 +253,24 @@ export default {
   computed: {
     displayTemData() {
       if (this.selectedTemtime !== 'Now') {
-        const index = this.items.indexOf(this.selectedTemtime);
-        return this.sensorTem[index];
+        const index = this.sensorTime.indexOf(this.selectedTemtime);
+        if (index !== -1) {
+          return this.sensorTem[index];
+        } else {
+          return [];
+        }
       } else {
         return this.sensorTem[this.sensorTem.length - 1];
       }
     },
     displayHumData() {
       if (this.selectedHumtime !== 'Now') {
-        const index = this.items.indexOf(this.selectedHumtime);
-        return this.sensorHum[index];
+        const index = this.sensorTime.indexOf(this.selectedHumtime);
+        if (index !== -1) {
+          return this.sensorHum[index];
+        } else {
+          return [];
+        }
       } else {
         return this.sensorHum[this.sensorHum.length - 1];
       }
@@ -266,9 +281,9 @@ export default {
       let chartId = this.tab === 'one' ? this.chartId : this.secondId;
       const chartElement = document.getElementById(chartId);
       const data = {
-        labels: ['00:00', '06:00', '12:00', '18:00', '23:59'],
+        labels: this.sensorTime,
         datasets: [{
-          label: this.tab === 'one' ? 'Temperature' : 'Humidity',
+          label: this.sensorDate,
           data: this.tab === 'one' ? this.sensorTem : this.sensorHum,
           backgroundColor: this.tab === 'one' ? '#E53935' : '#2196F3',
           borderColor: this.tab === 'one' ? '#E53935' : '#2196F3',
@@ -278,8 +293,6 @@ export default {
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
-
-      // 創建新的圖表實例
       this.chartInstance = new Chart(chartElement, {
         type: 'line',
         data: data,
