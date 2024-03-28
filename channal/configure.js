@@ -11,8 +11,8 @@ window.electronApi.send('configure', JSON.stringify({
         duration: "1",
         intervalread: "1days2h3m4s",
         starttrip: "1 4h5m || 2 4days3h5m || 3 2014/06/01 上 8:00",
-        finishtrip: "1 5readings || 2 ",
-        alerm: [true, true, false, false, true, true, 0, 0,false]
+        finishtrip: "1 5 || 2 4days3h5m || 3 2014/06/01 上 8:00",
+        alerm: [true, true, false, true, true, 0, 0,false]
     }
 }));
 

@@ -329,7 +329,7 @@
         }
         if(this.localfinishTrip == '1' && this.localfinish1Read !== ""){
           this.localfinishTripWarm = false;
-          localfinishTripData = this.localfinishTrip+" "+this.localfinish1Read+"readings";
+          localfinishTripData = this.localfinishTrip+" "+this.localfinish1Read;
         }else if (this.localfinishTrip == '2' && this.localfinish2Days !== "" && this.localfinish2Hour !== "" && this.localfinish2Minute !== ""){
           this.localfinishTripWarm = false;
           localfinishTripData = this.localfinishTrip+" "+this.localfinish2Days+"days"+this.localfinish2Hour+"h"+this.localfinish2Minute+"m";
