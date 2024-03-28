@@ -16,9 +16,28 @@ export default {
   mounted() {
   this.$router.push('/home');
   // window.electronApi.send('init', JSON.stringify({}));
-  window.electronApi.send('scan', JSON.stringify({
-    selects: ["1", "2"]
-  }));
+
+  window.electronApi.send('search', JSON.stringify([
+    {   //開始到結束時間的所有資料，包含頭尾
+        ID: '39-78',
+        startTime: '2024/3/11 23:59:54',
+        endTime: '2024/3/12 00:00:06'
+    },
+    {   //從開始時間查詢後4筆資料，包含開頭
+        ID: '39-78',
+        startTime: '2024/3/4 23:20:47',
+        quantity: 4
+    },
+    {   //從結束時間查詢前2筆資料，包含結尾
+        ID: '39-78',
+        endTime: '2024/3/12 23:20:48',
+        quantity: 2
+    },
+  ]));
+
+  window.electronApi.on('search', (e, data) => {
+    console.log(data);
+  });
 },
 
   components: {  },
