@@ -16,12 +16,6 @@
     letter-spacing: 0.5px;
     font-weight: 500;
   }
-  .dataTital{
-    font-size: 20px;
-    letter-spacing: 0.1px;
-    color: #757575;
-    margin: 2% 0;
-  }
   .InputDatacard{
     width: 100%;
     height: 70%;

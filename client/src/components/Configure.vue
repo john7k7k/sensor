@@ -1,6 +1,7 @@
 <template>
   <div class="Cbox">
     <div class="tital">Program and Configure</div> 
+    
     <v-btn class="closeBtn" density="comfortable" icon="$close" variant="plain" @click="closeModal"></v-btn>
     <div class="stepBox">
       <div class="stepBoxitem">
@@ -28,9 +29,10 @@
       </div>
     </div> 
     <div class="pageCard">
-      <ConfigurePage1 v-if="Step1show" ref="childComponent1" @dataToParent="handleDataFromChild"></ConfigurePage1>
-      <ConfigurePage2 v-if="Step2show"></ConfigurePage2>
-      <ConfigurePage3 v-if="Step3show"></ConfigurePage3>
+      <ConfigurePage1 v-if="Step1show" ref="childComponent1" @dataToParent="handleDataFromChild" :SensorID="answer1.description" 
+        :minimum="answer1.minimum" :maximum="answer1.maximum" :increment="answer1.increment" :choosevalue1="answer1.beeper" :choosevalue2="answer1.newbattery" ></ConfigurePage1>
+      <ConfigurePage2 v-if="Step2show" ref="childComponent2" @dataToParent="handleDataFromChild2"></ConfigurePage2>
+      <ConfigurePage3 v-if="Step3show" ref="childComponent3" @dataToParent="handleDataFromChild3"></ConfigurePage3>
       <ConfigurePage4 v-if="Step4show"></ConfigurePage4>
     </div>
     <div class="btnBox">
@@ -159,8 +161,26 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
         Step1Now:true,Step2Now:false,Step3Now:false,Step4Now:false,
         NowStep:1,
         SensorID:"",
-        answer:"",
+        answer1:{
+                  description: "",
+                  beeper: "",
+                  newbattery: "",
+                  minimum:"",
+                  maximum:"",
+                  increment:""
+                },
+        answer2:{
+            duration: "",
+            intervalread:"",
+            starttrip:"",
+            finishtrip:"",
+        },
         confirmBtnShow:false,
+        allowtoCallpassdata:false,
+        answer3:{
+          alerm:["","","","","","","",""],
+        },
+        totalPassdata:{},
       }
     },
     mounted() {
@@ -173,15 +193,15 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
       
       },
       Backpage(){
+        this.allowtoCallpassdata = false;
         if(this.NowStep == 1) return;
         this.NowStep -= 1;
         this.handleStepShow(this.NowStep);
       },
       Nextpage(){
+        this.allowtoCallpassdata = true;
         this.NowStep += 1;
         this.handleStepShow(this.NowStep);
-        
-        //this.$refs.childComponent1.PassData();
       },
       handleStepShow(num){
         if(num == 1){
@@ -191,13 +211,35 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
           this.confirmBtnShow = this.Step2Now = this.Step3Now = this.Step4Now = false;
           this.Step1Now = true;
         }else if(num == 2){
-          this.Step2show = true;
-          this.Step1show = this.Step3show = this.Step4show = false;
-          this.Step1done = true;
-          this.Step2done = this.Step3done = this.Step4done = false;
-          this.confirmBtnShow = this.Step1Now = this.Step3Now = this.Step4Now = false;
-          this.Step2Now = true;
+          if(this.allowtoCallpassdata == true) this.$refs.childComponent1.PassData();
+          if(this.answer1.description == "nodata"){
+            this.NowStep -= 1;
+            this.Step1show = true;
+            this.Step2show = this.Step3show = this.Step4show = false;
+            this.Step1done = this.Step2done = this.Step3done = this.Step4done = false;
+            this.confirmBtnShow = this.Step2Now = this.Step3Now = this.Step4Now = false;
+            this.Step1Now = true;
+          }else{
+            this.Step2show = true;
+            this.Step1show = this.Step3show = this.Step4show = false;
+            this.Step1done = true;
+            this.Step2done = this.Step3done = this.Step4done = false;
+            this.confirmBtnShow = this.Step1Now = this.Step3Now = this.Step4Now = false;
+            this.Step2Now = true;
+          }
+          
         }else if(num == 3){
+          if(this.allowtoCallpassdata == true) this.$refs.childComponent2.PassData();
+          if(this.answer2 == "false"){
+            this.NowStep -= 1;
+            this.Step2show = true;
+            this.Step1show = this.Step3show = this.Step4show = false;
+            this.Step1done = true;
+            this.Step2done = this.Step3done = this.Step4done = false;
+            this.confirmBtnShow = this.Step1Now = this.Step3Now = this.Step4Now = false;
+            this.Step2Now = true;
+            return;
+          }
           this.Step3show = true;
           this.Step1show = this.Step2show = this.Step4show = false;
           this.Step1done = this.Step2done =true;
@@ -205,6 +247,13 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
           this.confirmBtnShow = this.Step1Now = this.Step2Now = this.Step4Now = false;
           this.Step3Now = true;
         }else if(num == 4){
+          if(this.allowtoCallpassdata == true) this.$refs.childComponent3.PassData();
+          this.totalPassdata = {
+            ...this.answer1,
+            ...this.answer2,
+            ...this.answer3
+          };
+          alert(JSON.stringify(this.totalPassdata));
           this.Step4show = true;
           this.Step1show = this.Step2show = this.Step3show = false;
           this.Step1done = this.Step2done = this.Step3done = true; 
@@ -215,9 +264,17 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
         }
       },
       handleDataFromChild(data) {
-      this.answer = data;
-      alert(this.answer);
-    }
+      this.answer1 = data;
+      alert(JSON.stringify(this.answer1));
+      },
+      handleDataFromChild2(data) {
+        this.answer2 = data;
+        alert(JSON.stringify(this.answer2));
+      },
+      handleDataFromChild3(data) {
+        this.answer3 = data;
+        alert(JSON.stringify(this.answer3));
+      }
 
     }
   }

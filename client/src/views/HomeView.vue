@@ -13,10 +13,9 @@
       <v-btn class="dowloadFinishBtn"  @click="downloadResultmodal = false" flat v-if="!Downloading">Confirm</v-btn>
     </div>
     <div class="downloadBox" v-show="downloadModal">
-      <div class="downloadtitalBox">
-        <div class="downloadTital">Select the pin you want to download</div>
-        <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="downloadModal = false"></v-btn>
-      </div>
+      <div class="downloadTital">Select the pin you want to download</div>
+      <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="downloadModal = false"></v-btn>
+      
       <div class="choosePinBox">
         <v-radio-group @click="toggleRadio(name)"  v-for="(name,index) in chooseDownloadPinName" :key="name" v-model="chooseDownloadPin[index]"  hide-details>
           <v-radio class="checkboxWord" :label="name" :value="(index+1).toString()" color="#E57373" :input-value="chooseDownloadPin[index] === index+1"></v-radio>
@@ -28,10 +27,9 @@
         <v-btn class="dowloadFinishBtn"  @click="Startdownload" flat>Download</v-btn>
     </div>
     <div class="getMapBox" v-show="getMapmodal">
-      <div class="downloadtitalBox">
-        <div class="downloadTital">Foot position and description comparison table</div>
-        <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="getMapmodal = false"></v-btn>
-      </div>
+      <div class="downloadTital ">Foot position and description comparison table</div>
+      <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="getMapmodal = false"></v-btn>
+      
       <div class="tableBox">
         <Table border v-for="(num,index) in Mapdata" :key="num" :columns="columns" :data="Mapdata[index]"></Table>
       </div>
@@ -42,6 +40,7 @@
       <v-btn class="btnword" size="50" icon="mdi mdi-download" @click="downloadModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="configureModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-map-search" @click="Getmap"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-clipboard-text-search" ></v-btn>
       
     </div>
     <div class="item2">
@@ -165,15 +164,18 @@
   width: 100%;
   height: 8%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 .downloadTital{
   font-size: 22px;
   letter-spacing: 0.1px;
   font-weight: bold;
+  margin: auto;
 }
 .closedownloadBtn{
+  position: absolute;
+  right: 5%;
   font-size: 20px;
   font-weight: bold;
 }
@@ -251,6 +253,7 @@
   font-weight: bold;
   position: relative;
   top:2%;
+  margin: auto;
 }
 
 </style>
@@ -324,6 +327,19 @@ export default {
     Mapdata:[],
     downloadResultmodal:false,
     Downloading:true,
+    ConfigurepassData:{
+      description: "",
+      beeper: true,
+      newbattery:true,
+      minimum: "",
+      maximum: "",
+      increment: "",
+      duration: "1",
+      intervalread: "1days2h3m4s",
+      starttrip: "wait1h2m 或 in1days2h3m 或 at2003/3/24/13:00",
+      finishtrip: "after1h 或 after1days2h3m 或 at2003/3/24/13:00",
+      alerm:[true,true,false,true,true,0,0],
+    }
   }),
   mounted() {
     //this.handleData(this.data);
