@@ -7,8 +7,8 @@ SerialPort.list()
     ports.forEach(mport => {
         console.log(`${mport.path} - ${mport.manufacturer || 'Unknown manufacturer'}`);
     });
-    for(let por of ports){
-        port = await initPort(por.path);
+    for(let mport of ports){
+        port = await initPort(mport.path);
         if(port) break;
     }
   })
@@ -21,8 +21,8 @@ function initPort(com){
         let test_port = new SerialPort({ path: com, baudRate: 9600 },(err) => {
             console.error(err);
             if(err) return;
-            port.write(`1\n`);
-            port.on('data', (data) => {
+            test_port.write(`0\n`);
+            test_port.on('data', (data) => {
                 console.log('ackInit: ' + data);
                 resolve(test_port);
             });
@@ -31,8 +31,8 @@ function initPort(com){
     })
 }
 
-function chooseSensor(select){
-    return new Promise((resolve, reject) => {
+async function chooseSensor(select){
+   return new Promise((resolve, reject) => {
         try{
             port.write(`${select}\n`);
             port.on('data', (data) => {

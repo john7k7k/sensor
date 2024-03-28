@@ -2,23 +2,25 @@ const { SerialPort } = require('serialport');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
 const test = require('./test');
+//let port = new SerialPort({ path: "COM14", baudRate: 9600 })
+
 const { chooseSensor }  = require('./tool/port.js')
-/*
-function chooseSensor(description){
-    return new Promise((resolve, reject) => {
-        try{
-            const port = new SerialPort({ path: 'COM11', baudRate: 9600 },(err) => {
-                resolve(err);
-            });
-            port.write(`${description}\n`);
-            port.on('data', (data) => {
-                console.log('ack: ' + data);
-                resolve(data);
-            })
-        }catch(err){reject(err);}
-    })
-}
-*/
+
+// function chooseSensor(description){
+//     return new Promise((resolve, reject) => {
+//         try{
+//             const port = new SerialPort({ path: 'COM14', baudRate: 9600 },(err) => {
+//                 resolve(err);
+//             });
+//             port.write(`${description}\n`);
+//             port.on('data', (data) => {
+//                 console.log('ack: ' + data);
+//                 resolve(data);
+//             })
+//         }catch(err){reject(err);}
+//     })
+// }
+
 module.exports = ( ipcMain ) => {
     ipcMain.on('scan', async (e, mes) => {
         mes = JSON.parse(mes);

@@ -3,7 +3,7 @@
     <div class="InputDatacard">
         <div class="inputItem1">
           <div>
-            <div class="dataTital">Description<p class="starSymbol ml-5">∗</p></div>
+            <div class="dataTital">Pin(0-15)<p class="starSymbol ml-5">∗</p></div>
             <div class="warmTital" v-if="SensorIDWarm">Please provide the required information.</div>
             <Input class="inputCss" v-model="localSensorID" :border="false" size="small" />
           </div>
@@ -149,7 +149,7 @@
             this.SensorIDWarm = false;
         }
         let passData = {
-            description: this.localSensorID,
+            pin: this.localSensorID,
             beeper: this.localchoosevalue1 !== "" ? true : false,
             newbattery: this.localchoosevalue2 !== "" ? true : false,
             minimum: this.localMinimum,

@@ -29,7 +29,7 @@
       </div>
     </div> 
     <div class="pageCard">
-      <ConfigurePage1 v-if="Step1show" ref="childComponent1" @dataToParent="handleDataFromChild" :SensorID="answer1.description" 
+      <ConfigurePage1 v-if="Step1show" ref="childComponent1" @dataToParent="handleDataFromChild" :SensorID="answer1.pin" 
         :minimum="answer1.minimum" :maximum="answer1.maximum" :increment="answer1.increment" :choosevalue1="answer1.beeper" :choosevalue2="answer1.newbattery" ></ConfigurePage1>
       <ConfigurePage2 v-if="Step2show" ref="childComponent2" @dataToParent="handleDataFromChild2" :duration="duration" ></ConfigurePage2>
       <ConfigurePage3 v-if="Step3show" ref="childComponent3" @dataToParent="handleDataFromChild3"></ConfigurePage3>
@@ -162,7 +162,7 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
         NowStep:1,
         SensorID:"",
         answer1:{
-                  description: "",
+                  pin: "",
                   beeper: "",
                   newbattery: "",
                   minimum:"",
@@ -212,14 +212,13 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
           this.Step1Now = true;
         }else if(num == 2){
           if(this.allowtoCallpassdata == true) this.$refs.childComponent1.PassData();
-          if(this.answer1.description == "nodata"){
+          if(this.answer1.pin == "nodata"){
             this.NowStep -= 1;
             this.Step1show = true;
             this.Step2show = this.Step3show = this.Step4show = false;
             this.Step1done = this.Step2done = this.Step3done = this.Step4done = false;
             this.confirmBtnShow = this.Step2Now = this.Step3Now = this.Step4Now = false;
             this.Step1Now = true;
-            this.answer1.description = "11";
           }else{
             this.Step2show = true;
             this.Step1show = this.Step3show = this.Step4show = false;
@@ -254,7 +253,14 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
             ...this.answer2,
             ...this.answer3
           };
-          alert(JSON.stringify(this.totalPassdata));
+          //alert(JSON.stringify(this.totalPassdata));
+          window.electronApi.send('configure', JSON.stringify({
+              mode: "check", //"anyway"
+              ConfigurepassData:this.totalPassdata
+          }));
+          window.electronApi.on('configure', (e, data) => {
+            this.handleReceivedData(JSON.parse(data));
+          });
           this.Step4show = true;
           this.Step1show = this.Step2show = this.Step3show = false;
           this.Step1done = this.Step2done = this.Step3done = true; 
@@ -264,17 +270,20 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
           this.Step4Now = true;
         }
       },
+      handleReceivedData(data) {
+        console.log('Received data from main process:', data);
+      },
       handleDataFromChild(data) {
       this.answer1 = data;
-      alert(JSON.stringify(this.answer1));
+      //alert(JSON.stringify(this.answer1));
       },
       handleDataFromChild2(data) {
         this.answer2 = data;
-        alert(JSON.stringify(this.answer2));
+        //alert(JSON.stringify(this.answer2));
       },
       handleDataFromChild3(data) {
         this.answer3 = data;
-        alert(JSON.stringify(this.answer3));
+        //alert(JSON.stringify(this.answer3));
       }
 
     }

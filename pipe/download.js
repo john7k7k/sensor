@@ -4,6 +4,8 @@ const path = require('path');
 const test = require('./test');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
+//let port = new SerialPort({ path: "COM14", baudRate: 9600 })
+
 const { chooseSensor } = require('./tool/port.js');
 
 function convertCSV(rawData){
@@ -42,21 +44,21 @@ function updateCSV(path, data){
     })
     
 }
-/*
-function chooseSensor(description){
-    return new Promise((resolve, reject) => {
-        try{
-            const port = new SerialPort({ path: 'COM11', baudRate: 9600 },(err) => {
-                resolve(err);
-            });
-            port.write(`${description}\n`);
-            port.on('data', (data) => {
-                console.log('ack: ' + data);
-                resolve(data);
-            })
-        }catch(err){reject(err);}
-    })
-}*/
+
+// function chooseSensor(description){
+//     return new Promise((resolve, reject) => {
+//         try{
+//             // port = new SerialPort({ path: 'COM14', baudRate: 9600 },(err) => {
+//             //     resolve(err);
+//             // });
+//             port.write(`${description}\n`);
+//             port.on('data', (data) => {
+//                 console.log('ack: ' + data);
+//                 resolve(data);
+//             })
+//         }catch(err){reject(err);}
+//     })
+// }
 
 module.exports = ( ipcMain ) => {
     ipcMain.on('download', async (e, mes) => {
@@ -74,6 +76,7 @@ module.exports = ( ipcMain ) => {
             } ;
             
             let exeData = await callExe('loading.exe');
+            if(exeData.split)
             console.log(exeData.split('\n').length);
             if(exeData === 'test') exeData = require('./test.js')[1];
             else if(exeData.split('\n').length < 4) {

@@ -12,10 +12,25 @@
 export default {
   name: 'App',
   mounted() {
-  this.$router.push('/home');
-  
-},
 
+  this.$router.push('/home');
+  /*window.electronApi.send('configure', JSON.stringify({
+    mode: "check", //"anyway"
+    ConfigurepassData:{
+        description: "33-44",
+        beeper: true,
+        newbattery: true,
+        minimum: "",
+        maximum: "",
+        increment: "",
+        duration: "1",
+        intervalread: "1days2h3m4s",
+        starttrip: "wait1h2m",
+        finishtrip: "after1h",
+        alerm: [true, true, false, false, true, true, 0, 0]
+    }
+  }));*/
+},
 
   components: {  },
   data: () => ({

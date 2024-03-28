@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 module.exports = ( ipcMain ) => {
     ipcMain.on('init',(e, mes) => {
-        console.log(mes);
         let resData = {};
         fs.readdir('datas', async (err, files) => {
             await Promise.all(files.map(fileName => new Promise((resolve, reject) => {
