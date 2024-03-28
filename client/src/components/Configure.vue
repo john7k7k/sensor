@@ -31,7 +31,7 @@
     <div class="pageCard">
       <ConfigurePage1 v-if="Step1show" ref="childComponent1" @dataToParent="handleDataFromChild" :SensorID="answer1.description" 
         :minimum="answer1.minimum" :maximum="answer1.maximum" :increment="answer1.increment" :choosevalue1="answer1.beeper" :choosevalue2="answer1.newbattery" ></ConfigurePage1>
-      <ConfigurePage2 v-if="Step2show" ref="childComponent2" @dataToParent="handleDataFromChild2"></ConfigurePage2>
+      <ConfigurePage2 v-if="Step2show" ref="childComponent2" @dataToParent="handleDataFromChild2" :duration="duration" ></ConfigurePage2>
       <ConfigurePage3 v-if="Step3show" ref="childComponent3" @dataToParent="handleDataFromChild3"></ConfigurePage3>
       <ConfigurePage4 v-if="Step4show"></ConfigurePage4>
     </div>
@@ -219,6 +219,7 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
             this.Step1done = this.Step2done = this.Step3done = this.Step4done = false;
             this.confirmBtnShow = this.Step2Now = this.Step3Now = this.Step4Now = false;
             this.Step1Now = true;
+            this.answer1.description = "11";
           }else{
             this.Step2show = true;
             this.Step1show = this.Step3show = this.Step4show = false;
