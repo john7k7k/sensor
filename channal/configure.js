@@ -2,17 +2,17 @@
 window.electronApi.send('configure', JSON.stringify({
     mode: "check", //"anyway"
     ConfigurepassData:{
-        description: "",
-        beeper: true,
+        description: "", 
+        beeper: true, //
         newbattery: true,
-        minimum: "",
-        maximum: "",
-        increment: "",
-        duration: "1",
-        intervalread: "1days2h3m4s",
+        minimum: "", //2
+        maximum: "", //3
+        increment: "", //4
+        duration: "1", //8
+        intervalread: "1days2h3m4s", //9
         starttrip: "wait1h2m",
         finishtrip: "after1h",
-        alerm: [true, true, false, false, true, true, 0, 0]
+        alerm: [true, true, false, false, true,  0, 0, true] //5
     }
 }));
 
