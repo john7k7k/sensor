@@ -4,6 +4,9 @@ const path = require('path');
 const test = require('./test');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
+//let port = new SerialPort({ path: "COM14", baudRate: 9600 })
+
+const { chooseSensor } = require('./tool/port.js');
 
 function convertCSV(rawData){
     const lines = rawData.split('\n');
@@ -42,43 +45,54 @@ function updateCSV(path, data){
     
 }
 
-function chooseSensor(description){
-    return new Promise((resolve, reject) => {
-        try{
-            const port = new SerialPort({ path: 'COM11', baudRate: 9600 },(err) => {
-                resolve(err);
-            });
-            port.write(`${description}\n`);
-            port.on('data', (data) => {
-                console.log('ack: ' + data);
-                resolve(data);
-            })
-        }catch(err){reject(err);}
-    })
-}
-
-
-
+// function chooseSensor(description){
+//     return new Promise((resolve, reject) => {
+//         try{
+//             // port = new SerialPort({ path: 'COM14', baudRate: 9600 },(err) => {
+//             //     resolve(err);
+//             // });
+//             port.write(`${description}\n`);
+//             port.on('data', (data) => {
+//                 console.log('ack: ' + data);
+//                 resolve(data);
+//             })
+//         }catch(err){reject(err);}
+//     })
+// }
 
 module.exports = ( ipcMain ) => {
     ipcMain.on('download', async (e, mes) => {
         mes = JSON.parse(mes);
         let resData = {};
+        let decMap = await decMapf.getDecMap();
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
-            // const MCUack = await chooseSensor(select);
-            // if(!MCUack){
-            //    resData[select].state = 'MCU  not ack';
-            //    continue;
-            // } ;
             resData[select] = {};
+            const MCUack = await chooseSensor(select);
+            if(!MCUack){
+               resData[select].state = 'MCU  not ack';
+               resData[select].description = decMap[select];
+               continue;
+            } ;
+            
             let exeData = await callExe('loading.exe');
+            if(exeData.split)
+            console.log(exeData.split('\n').length);
             if(exeData === 'test') exeData = require('./test.js')[1];
-            if(!exeData) {
-                resData[select].state = 'can not call exe'
+            else if(exeData.split('\n').length < 4) {
+                resData[select].state = 'call exe error, please check connect';
+                resData[select].description = decMap[select];
+                continue;
             };
             console.log(exeData)
             let description = exeData.split('\n')[2].split(':')[1].slice(1, 6);
+            if(mes.mode === "check"){
+                if((await decMapf.getDecMap())[select] !== description){
+                    resData[select].state = 'description is not original, the new one is ' + description;
+                    resData[select].description = decMap[select];
+                    continue;
+                }
+            }
             decMapf.updateDecMap(select, description);
             resData[select].description = description;
             fs.readdir('datas', (err, fileNames) => {  

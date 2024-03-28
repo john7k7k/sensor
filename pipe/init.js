@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 module.exports = ( ipcMain ) => {
     ipcMain.on('init',(e, mes) => {
-        console.log(mes);
         let resData = {};
         fs.readdir('datas', async (err, files) => {
             await Promise.all(files.map(fileName => new Promise((resolve, reject) => {
@@ -12,7 +11,7 @@ module.exports = ( ipcMain ) => {
                     resolve(0);
                 })
             })))
-            console.log(convertSender(resData)[0].data);
+            console.log(convertSender(resData));
             e.sender.send('init', JSON.stringify(convertSender(resData)));
         })
     });
