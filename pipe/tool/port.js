@@ -1,5 +1,5 @@
 const { SerialPort } = require('serialport');
-//let port = new SerialPort({ path: "COM14", baudRate: 9600 });
+let port = {};
 
 SerialPort.list()
   .then(async ports => {
@@ -7,8 +7,8 @@ SerialPort.list()
     ports.forEach(mport => {
         console.log(`${mport.path} - ${mport.manufacturer || 'Unknown manufacturer'}`);
     });
-    for(let por of ports){
-        port = await initPort(por.path);
+    for(let mport of ports){
+        port = await initPort(mport.path);
         if(port) break;
     }
   })

@@ -2,7 +2,7 @@ const { SerialPort } = require('serialport');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
 const test = require('./test');
-let port = new SerialPort({ path: "COM14", baudRate: 9600 })
+//let port = new SerialPort({ path: "COM14", baudRate: 9600 })
 
 const { chooseSensor }  = require('./tool/port.js')
 
