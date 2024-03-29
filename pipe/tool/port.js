@@ -1,6 +1,6 @@
 const { SerialPort } = require('serialport');
 let port = {};
-
+let fin = 0;
 SerialPort.list()
   .then(async ports => {
     console.log('COM connected:');
@@ -24,9 +24,13 @@ function initPort(com){
             test_port.write(`0\n`);
             test_port.on('data', (data) => {
                 console.log('ackInit: ' + data);
+                fin = 1;
                 resolve(test_port);
             });
-            setTimeout(resolve, 1000);
+            setTimeout(() => {
+                if(fin === 0)test_port._disconnected(0);
+                resolve();
+            }, 1000);
         });
     })
 }

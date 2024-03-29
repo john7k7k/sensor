@@ -14,7 +14,7 @@ export default {
   mounted() {
 
   this.$router.push('/home');
-  window.electronApi.send('configure', JSON.stringify({
+  /*window.electronApi.send('configure', JSON.stringify({
     mode: "check", //"anyway"
     ConfigurepassData:{
         description: "33-44",
@@ -29,7 +29,7 @@ export default {
         finishtrip: "after1h",
         alerm: [true, true, false, false, true, true, 0, 0]
     }
-  }));
+  }));*/
 },
 
   components: {  },

@@ -95,6 +95,7 @@ module.exports = ( ipcMain ) => {
             }
             decMapf.updateDecMap(select, description);
             resData[select].description = description;
+            resData[select].state = 'OK';
             fs.readdir('datas', (err, fileNames) => {  
                 if(!description) description = 'data';
                 if(fileNames.find(fileName => fileName === description + '.csv')){

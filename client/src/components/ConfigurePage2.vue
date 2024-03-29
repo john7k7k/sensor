@@ -3,11 +3,11 @@
     <div class="InputDatacard">
         <div class="inputItem1">
           <div>
-            <div class="dataTital">Duration of a trip<p class="starSymbol ml-5">∗</p></div>
-            <div class="warmTital" v-if="durationWarm">Please provide the required information.</div>
+            <div class="dataTital">localduration of a trip<p class="starSymbol ml-5">∗</p></div>
+            <div class="warmTital" v-if="localdurationWarm">Please provide the required information.</div>
             <div class="combinBox mb-15">
               <div class="selectbox ">
-                <v-select v-model="duration" :items="items" density="compact"  class="selecttime" rounded="xl"  
+                <v-select v-model="localduration" :items="localitems" density="compact"  class="selecttime" rounded="xl"  
                 bg-color="white"  flat variant="solo" ></v-select>
               </div>
               <div class="ml-5 unitWord">Days</div>
@@ -15,13 +15,13 @@
           </div>
           <div>
             <div class="dataTital">Interval between each reading<p class="starSymbol ml-5">∗</p></div>
-            <div class="warmTital" v-if="intervalWarm">Please provide the required information.</div>
+            <div class="warmTital" v-if="localintervalWarm">Please provide the required information.</div>
             <div class="combinBox">
-              <Input class="smallinputCss" v-model="intervalreadDays" :border="false" size="small" />
+              <Input class="smallinputCss" v-model="localintervalreadDays" :border="false" size="small" />
               <div class="ml-5 unitWord">Days</div>
             </div>
             <div class="combinBox">
-              <Input class="smallinputCss" v-model="intervalreadHours" :border="false" size="small" />
+              <Input class="smallinputCss" v-model="localintervalreadHours" :border="false" size="small" />
               <div class="ml-5 unitWord">h</div>
             </div>
             <div class="combinBox">
@@ -29,7 +29,7 @@
               <div class="ml-5 unitWord">m</div>
             </div>
             <div class="combinBox">
-              <Input class="smallinputCss" v-model="intervalreadSeconds" :border="false" size="small" />
+              <Input class="smallinputCss" v-model="localintervalreadSeconds" :border="false" size="small" />
               <div class="ml-5 unitWord">s</div>
             </div>
             
@@ -37,88 +37,88 @@
         </div>
         <div class="inputItem2">
           <div class="dataTital2">Start new log trip <p class="starSymbol ml-5">∗</p></div>
-          <div class="warmTital" v-if="startTripWarm">Please provide the required information.</div>
+          <div class="warmTital" v-if="localstartTripWarm">Please provide the required information.</div>
           <div class="chooseLogtripBox">
             <div class="chooseLogtripBoxitem1">
-              <v-radio-group class="checkBox " v-model="startTrip" @click="toggleRadio" hide-details>
+              <v-radio-group class="checkBox " v-model="localstartTrip" @click="toggleRadio" hide-details>
                 <v-radio class="checkboxWord"  value="1" color="#E57373"></v-radio>
               </v-radio-group>
               <div class="unitWord ">Wait</div>
             </div>
             <div class="chooseLogtripBoxitem2">
-              <Input class="ml-7 smallinputCss2" v-model="start1Hour" :border="false" size="small" />
+              <Input class="ml-7 smallinputCss2" v-model="localstart1Hour" :border="false" size="small" />
               <div class="ml-5 unitWord">h</div>
-              <Input class="ml-5 smallinputCss2 " v-model="start1Minute" :border="false" size="small" />
+              <Input class="ml-5 smallinputCss2 " v-model="localstart1Minute" :border="false" size="small" />
               <div class="ml-5 unitWord ">m</div>
               <div class="ml-5 unitWord">after a magnetic start</div>
             </div>
           </div>
           <div class="chooseLogtripBox ">
             <div class="chooseLogtripBoxitem1">
-              <v-radio-group class="checkBox " v-model="startTrip" @click="toggleRadio" hide-details>
+              <v-radio-group class="checkBox " v-model="localstartTrip" @click="toggleRadio" hide-details>
                 <v-radio class="checkboxWord"  value="2" color="#E57373"></v-radio>
               </v-radio-group>
               <div class="unitWord mr-4">In</div>
             </div>
             <div class="chooseLogtripBoxitem2 ">
-              <Input class="ml-7 smallinputCss2" v-model="start2Days" :border="false" size="small" />
+              <Input class="ml-7 smallinputCss2" v-model="localstart2Days" :border="false" size="small" />
               <div class="ml-5 unitWord">Days</div>
-              <Input class="ml-5 smallinputCss2 " v-model="start2Hour" :border="false" size="small" />
+              <Input class="ml-5 smallinputCss2 " v-model="localstart2Hour" :border="false" size="small" />
               <div class="ml-5 unitWord ">h</div>
-              <Input class="ml-5 smallinputCss2 " v-model="start2Minute" :border="false" size="small" />
+              <Input class="ml-5 smallinputCss2 " v-model="localstart2Minute" :border="false" size="small" />
               <div class="ml-5 unitWord ">m</div>
             </div>
           </div>
           <div class="chooseLogtripBox ">
             <div class="chooseLogtripBoxitem1">
-              <v-radio-group class="checkBox " v-model="startTrip" @click="toggleRadio" hide-details>
+              <v-radio-group class="checkBox " v-model="localstartTrip" @click="toggleRadio" hide-details>
                 <v-radio class="checkboxWord"  value="3" color="#E57373"></v-radio>
               </v-radio-group>
               <div class="unitWord mr-4">At</div>
             </div>
             <div class="chooseLogtripBoxitem2 ">
-              <Input class="ml-7 smallinputCss2" v-model="start3Date" :border="false" size="small" />
+              <Input class="ml-7 smallinputCss2" v-model="localstart3Date" :border="false" size="small" />
             </div>
           </div>
           <div class="dataTital">Finish log trip<p class="starSymbol ml-5">∗</p></div>
-          <div class="warmTital" v-if="finishTripWarm">Please provide the required information.</div>
+          <div class="warmTital" v-if="localfinishTripWarm">Please provide the required information.</div>
           <div class="chooseLogtripBox">
             <div class="chooseLogtripBoxitem1">
-              <v-radio-group class="checkBox " v-model="finishTrip" @click="toggleRadio2" hide-details>
+              <v-radio-group class="checkBox " v-model="localfinishTrip" @click="toggleRadio2" hide-details>
                 <v-radio class="checkboxWord"  value="1" color="#E57373"></v-radio>
               </v-radio-group>
               <div class="unitWord ">After</div>
             </div>
             <div class="chooseLogtripBoxitem2">
-              <Input class="ml-7 smallinputCss2" v-model="finish1Read" :border="false" size="small" />
+              <Input class="ml-7 smallinputCss2" v-model="localfinish1Read" :border="false" size="small" />
               <div class="ml-5 unitWord">readings</div>
             </div>
           </div>
           <div class="chooseLogtripBox">
             <div class="chooseLogtripBoxitem1">
-              <v-radio-group class="checkBox " v-model="finishTrip" @click="toggleRadio2" hide-details>
+              <v-radio-group class="checkBox " v-model="localfinishTrip" @click="toggleRadio2" hide-details>
                 <v-radio class="checkboxWord"  value="2" color="#E57373"></v-radio>
               </v-radio-group>
               <div class="unitWord ">After</div>
             </div>
             <div class="chooseLogtripBoxitem2">
-              <Input class="ml-7 smallinputCss2" v-model="finish2Days" :border="false" size="small" />
+              <Input class="ml-7 smallinputCss2" v-model="localfinish2Days" :border="false" size="small" />
               <div class="ml-5 unitWord">Days</div>
-              <Input class="ml-5 smallinputCss2 " v-model="finish2Hour" :border="false" size="small" />
+              <Input class="ml-5 smallinputCss2 " v-model="localfinish2Hour" :border="false" size="small" />
               <div class="ml-5 unitWord ">h</div>
-              <Input class="ml-5 smallinputCss2 " v-model="finish2Minute" :border="false" size="small" />
+              <Input class="ml-5 smallinputCss2 " v-model="localfinish2Minute" :border="false" size="small" />
               <div class="ml-5 unitWord ">m</div>
             </div>
           </div>
           <div class="chooseLogtripBox">
             <div class="chooseLogtripBoxitem1">
-              <v-radio-group class="checkBox " v-model="finishTrip" @click="toggleRadio2" hide-details>
+              <v-radio-group class="checkBox " v-model="localfinishTrip" @click="toggleRadio2" hide-details>
                 <v-radio class="checkboxWord"  value="3" color="#E57373"></v-radio>
               </v-radio-group>
               <div class="unitWord mr-4">At</div>
             </div>
             <div class="chooseLogtripBoxitem2">
-              <Input class="ml-7 smallinputCss2" v-model="finish3Date" :border="false" size="small" />
+              <Input class="ml-7 smallinputCss2" v-model="localfinish3Date" :border="false" size="small" />
             </div>
           </div>
         </div>
@@ -244,32 +244,36 @@
   <script>
   export default {
     props: {
+      duration: {
+        type: String,
+        required: true
+      },
     },
       data() {
       return {
-          items:["1day", "2days", "3days", "4days", "5days", "6days", "7days"],
-          duration:"",
-          intervalreadDays:"",
-          intervalreadHours:"",
+          localitems:["1day", "2days", "3days", "4days", "5days", "6days", "7days"],
+          localduration:this.duration,
+          localintervalreadDays:"",
+          localintervalreadHours:"",
           intervalreadMinutes:"",
-          intervalreadSeconds:"",
-          startTrip: "",
-          finishTrip: "",
-          start1Hour: "",
-          start1Minute: "",
-          start2Days: "",
-          start2Hour: "",
-          start2Minute: "",
-          start3Date: "",
-          finish1Read: "",
-          finish2Days: "",
-          finish2Hour: "",
-          finish2Minute: "",
-          finish3Date: "",
-          startTripWarm:false,
-          finishTripWarm:false,
-          durationWarm:false,
-          intervalWarm:false,
+          localintervalreadSeconds:"",
+          localstartTrip: "",
+          localfinishTrip: "",
+          localstart1Hour: "",
+          localstart1Minute: "",
+          localstart2Days: "",
+          localstart2Hour: "",
+          localstart2Minute: "",
+          localstart3Date: "",
+          localfinish1Read: "",
+          localfinish2Days: "",
+          localfinish2Hour: "",
+          localfinish2Minute: "",
+          localfinish3Date: "",
+          localstartTripWarm:false,
+          localfinishTripWarm:false,
+          localdurationWarm:false,
+          localintervalWarm:false,
 
 
 
@@ -280,67 +284,67 @@
       },
       methods: {
         toggleRadio() {
-          if (this.startTrip === '1') {
-            this.startTrip = '';
-          } else if (this.startTrip === '2') {
-            this.startTrip = '';
-          } else if (this.startTrip === '3') {
-            this.startTrip = '';
+          if (this.localstartTrip === '1') {
+            this.localstartTrip = '';
+          } else if (this.localstartTrip === '2') {
+            this.localstartTrip = '';
+          } else if (this.localstartTrip === '3') {
+            this.localstartTrip = '';
           }
       },
       toggleRadio2() {
-        if (this.finishTrip === '1') {
-            this.finishTrip = '';
-          } else if (this.finishTrip === '2') {
-            this.finishTrip = '';
-          } else if (this.finishTrip === '3') {
-            this.finishTrip = '';
+        if (this.localfinishTrip === '1') {
+            this.localfinishTrip = '';
+          } else if (this.localfinishTrip === '2') {
+            this.localfinishTrip = '';
+          } else if (this.localfinishTrip === '3') {
+            this.localfinishTrip = '';
           }
       },
       PassData() {
         let passData ={};
-        let startTripData = "";
-        let finishTripData = "";
-        if(this.duration == ""){
-          this.durationWarm = true;
+        let localstartTripData = "";
+        let localfinishTripData = "";
+        if(this.localduration == ""){
+          this.localdurationWarm = true;
         }else{
-          this.durationWarm = false;
+          this.localdurationWarm = false;
         }
-        if(this.intervalreadDays == "" ||this.intervalreadHours == "" ||this.intervalreadMinutes == "" ||this.intervalreadSeconds == ""){
-          this.intervalWarm = true;
+        if(this.localintervalreadDays == "" ||this.localintervalreadHours == "" ||this.intervalreadMinutes == "" ||this.localintervalreadSeconds == ""){
+          this.localintervalWarm = true;
         }else{
-          this.intervalWarm = false;
+          this.localintervalWarm = false;
         }
-        if(this.startTrip == '1' && this.start1Hour !== "" && this.start1Minute !== ""){
-          this.startTripWarm = false;
-          startTripData = this.startTrip+" "+this.start1Hour+"h"+this.start1Minute+"m";
-        }else if (this.startTrip == '2' && this.start2Days !== "" && this.start2Hour !== "" && this.start2Minute !== ""){
-          this.startTripWarm = false;
-          startTripData = this.startTrip+" "+this.start2Days+"days"+this.start2Hour+"h"+this.start2Minute+"m";
-        }else if (this.startTrip == '3' && this.start3Date !== ""){
-          this.startTripWarm = false;
-          startTripData = this.startTrip+" "+this.start3Date;
+        if(this.localstartTrip == '1' && this.localstart1Hour !== "" && this.localstart1Minute !== ""){
+          this.localstartTripWarm = false;
+          localstartTripData = this.localstartTrip+" "+this.localstart1Hour+"h"+this.localstart1Minute+"m";
+        }else if (this.localstartTrip == '2' && this.localstart2Days !== "" && this.localstart2Hour !== "" && this.localstart2Minute !== ""){
+          this.localstartTripWarm = false;
+          localstartTripData = this.localstartTrip+" "+this.localstart2Days+"days"+this.localstart2Hour+"h"+this.localstart2Minute+"m";
+        }else if (this.localstartTrip == '3' && this.localstart3Date !== ""){
+          this.localstartTripWarm = false;
+          localstartTripData = this.localstartTrip+" "+this.localstart3Date;
         }else {
-          this.startTripWarm = true;
+          this.localstartTripWarm = true;
         }
-        if(this.finishTrip == '1' && this.finish1Read !== ""){
-          this.finishTripWarm = false;
-          finishTripData = this.finishTrip+" "+this.finish1Read+"readings";
-        }else if (this.finishTrip == '2' && this.finish2Days !== "" && this.finish2Hour !== "" && this.finish2Minute !== ""){
-          this.finishTripWarm = false;
-          finishTripData = this.finishTrip+" "+this.finish2Days+"days"+this.finish2Hour+"h"+this.finish2Minute+"m";
-        }else if (this.finishTrip == '3' && this.finish3Date !== ""){
-          this.finishTripWarm = false;
-          finishTripData = this.finishTrip+" "+this.finish3Date;
+        if(this.localfinishTrip == '1' && this.localfinish1Read !== ""){
+          this.localfinishTripWarm = false;
+          localfinishTripData = this.localfinishTrip+" "+this.localfinish1Read;
+        }else if (this.localfinishTrip == '2' && this.localfinish2Days !== "" && this.localfinish2Hour !== "" && this.localfinish2Minute !== ""){
+          this.localfinishTripWarm = false;
+          localfinishTripData = this.localfinishTrip+" "+this.localfinish2Days+"days"+this.localfinish2Hour+"h"+this.localfinish2Minute+"m";
+        }else if (this.localfinishTrip == '3' && this.localfinish3Date !== ""){
+          this.localfinishTripWarm = false;
+          localfinishTripData = this.localfinishTrip+" "+this.localfinish3Date;
         }else {
-          this.finishTripWarm = true;
+          this.localfinishTripWarm = true;
         }
-        if(this.durationWarm == false && this.intervalWarm == false && this.startTripWarm == false && this.finishTripWarm == false){
+        if(this.localdurationWarm == false && this.localintervalWarm == false && this.localstartTripWarm == false && this.localfinishTripWarm == false){
           passData = {
-            duration: this.duration,
-            intervalread:this.intervalreadDays+"days"+this.intervalreadHours+"h"+this.intervalreadMinutes+"m"+this.intervalreadSeconds+"s",
-            starttrip:startTripData,
-            finishtrip:finishTripData
+            localduration: this.localduration == "1day" ? this.localduration.replace("day", ""):this.localduration.replace("days", ""),
+            intervalread:this.localintervalreadDays+"days"+this.localintervalreadHours+"h"+this.intervalreadMinutes+"m"+this.localintervalreadSeconds+"s",
+            localstartTrip:localstartTripData,
+            localfinishTrip:localfinishTripData
           };
         }else{
           passData = "false"

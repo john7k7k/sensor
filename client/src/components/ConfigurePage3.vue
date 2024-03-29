@@ -172,8 +172,8 @@
                  this.alerm[2] !== "" ? true:false,
                  this.alerm[3] !== "" ? true:false,
                  this.alerm[4] !== "" ? true:false,
-                 this.alerm[5],
-                 this.alerm[6],
+                 parseInt(this.alerm[5]),
+                 parseInt(this.alerm[6]),
                  this.alerm[7] !== "" ? true:false,
                 ],
         };
