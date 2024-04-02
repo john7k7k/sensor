@@ -10,7 +10,7 @@ window.electronApi.send('search', JSON.stringify([
         startTime: '2024/3/4 23:20:47',
         quantity: 4
     },
-    {   //從結束時間查詢前4筆資料，包含結尾
+    {   //從結束時間查詢前2筆資料，包含結尾
         ID: 'X3',
         endTime: '2024/3/12 23:20:48',
         quantity: 2
