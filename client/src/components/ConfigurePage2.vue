@@ -79,7 +79,13 @@
               <div class="unitWord mr-4">At</div>
             </div>
             <div class="chooseLogtripBoxitem2 ">
-              <Input class="ml-7 smallinputCss2" v-model="localstart3Date" :border="false" size="small" />
+              <!-- <Input class="ml-7 smallinputCss2" v-model="localstart3Date" :border="false" size="small" /> -->
+              <Input class="ml-7 DateinputCss" v-model="localstart3Date" :border="false" size="small" @click="showDatePicker" readonly />
+              <v-date-picker v-model="originStartdate" v-if="isDatePickerVisible" class="ml-7 DateinputCss " style="background-color: #ECEFF1;"></v-date-picker>
+              <div class="ml-5 unitWord ">Time</div>
+              <Input class="ml-5 smallinputCss2 " v-model="localstart3Hour" :border="false" size="small" />
+              <div class="ml-5 unitWord ">:</div>
+              <Input class="ml-5 smallinputCss2 " v-model="localstart3Minute" :border="false" size="small" />
             </div>
           </div>
           <div class="dataTital">Finish log trip<p class="starSymbol ml-5">∗</p></div>
@@ -127,7 +133,7 @@
         </div>
     </div>
   </template>
-    
+  
   <style scoped>
   .pageTital{
     font-size: 35px;
@@ -228,6 +234,13 @@
     border: 1px solid #BDBDBD;
     border-radius: 25px;
 }
+.DateinputCss{
+  width: 18%;
+  padding: 5px;
+  border: 1px solid #BDBDBD;
+  border-radius: 25px;
+  text-align: center;
+}
 .combinBox{
   display: flex;
   width: 100%;
@@ -280,6 +293,8 @@
           localstart2Hour: "",
           localstart2Minute: "",
           localstart3Date: "",
+          localstart3Hour:"00",
+          localstart3Minute:"00",
           localfinish1Read: "",
           localfinish2Days: "",
           localfinish2Hour: "",
@@ -292,8 +307,8 @@
           intervalNumberWarm:false,
           StartNumberWarm:false,
           FinishNumberWarm:false,
-          
-
+          isDatePickerVisible: false,
+          originStartdate:"",
 
 
 
@@ -368,6 +383,14 @@
             }
           }
       },
+      watch: {
+        originStartdate(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.localstart3Date = this.formatDate(newValue);
+        this.hideDatePicker();
+      }
+    }
+      },
       methods: {
         toggleRadio() {
           if (this.localstartTrip === '1') {
@@ -391,6 +414,8 @@
         let passData ={};
         let localstartTripData = "";
         let localfinishTripData = "";
+        let timeUporDown = " 上 ";
+        let localstart3Time = this.localstart3Hour+":"+this.localstart3Minute
         if(this.localduration == ""){
           this.localdurationWarm = true;
         }else{
@@ -420,13 +445,19 @@
             this.StartNumberWarm = false;
             localstartTripData = this.localstartTrip+" "+this.localstart2Days+"days"+this.localstart2Hour+"h"+this.localstart2Minute+"m";
           }
-        }else if (this.localstartTrip == '3' && this.localstart3Date !== ""){
+        }else if (this.localstartTrip == '3' && this.localstart3Date !== "" ){
           this.localstartTripWarm = false;
-          if(!/^\d+$/.test(this.localstart3Date)) this.StartNumberWarm = true;
-          else{
             this.StartNumberWarm = false;
-            localstartTripData = this.localstartTrip+" "+this.localstart3Date;
-          }
+            const [hoursStr] = localstart3Time.split(':');
+
+            const hours = parseInt(hoursStr);
+
+            if (hours >= 0 && hours < 12) {
+              timeUporDown = ' 上';
+            } else {
+              timeUporDown = ' 下';
+            }
+            localstartTripData = this.localstartTrip+" "+this.localstart3Date+timeUporDown+localstart3Time;
         }else {
           this.localstartTripWarm = true;
         }
@@ -466,7 +497,20 @@
         }
         
         this.$emit('dataToParent', passData);
-      }
+      },
+      showDatePicker() {
+      this.isDatePickerVisible = true;
+    },
+    hideDatePicker() {
+      this.isDatePickerVisible = false;
+    },
+    formatDate(date) {
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = ('0' + (d.getMonth() + 1)).slice(-2);
+      const day = ('0' + d.getDate()).slice(-2);
+      return `${year}/${month}/${day}`;
+    }
       }
   }
   </script>
