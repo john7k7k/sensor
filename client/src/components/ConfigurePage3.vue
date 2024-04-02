@@ -1,5 +1,5 @@
 <template>
-    <div class="pageTital">Alerm</div>
+    <div class="pageTital">Alerm<p class="starSymbol ml-5">∗</p></div>
     <div class="InputDatacard">
       <v-radio-group class="checkBox " v-model="alerm[0]" @click="toggleRadio(alerm[0],0)" hide-details>
         <v-radio   value="true" color="#E57373">
@@ -15,21 +15,21 @@
         </template>
         </v-radio>
       </v-radio-group>
-      <v-radio-group class="checkBox " v-model="alerm[2]" @click="toggleRadio(alerm[2],2)" hide-details>
+      <v-radio-group class="checkBox " v-model="alerm[2]" @click="toggleRadio(alerm[2],2)" hide-details :disabled="forClick">
         <v-radio   value="true" color="#E57373">
           <template v-slot:label>
           <div class="checkboxWord">Deactivate alarm if connditions go back into spec</div>
         </template>
         </v-radio>
       </v-radio-group>
-      <v-radio-group class="checkBox " v-model="alerm[3]" @click="toggleRadio(alerm[3],3)" hide-details>
+      <v-radio-group class="checkBox " v-model="alerm[3]" @click="toggleRadio(alerm[3],3)" hide-details :disabled="forClick">
         <v-radio   value="true" color="#E57373">
           <template v-slot:label>
           <div class="checkboxWord">EAudible alarm and alarm link activation</div>
         </template>
         </v-radio>
       </v-radio-group>
-      <v-radio-group class="checkBox " v-model="alerm[4]" @click="toggleRadio(alerm[4],4)" hide-details>
+      <v-radio-group class="checkBox " v-model="alerm[4]" @click="toggleRadio(alerm[4],4)" hide-details :disabled="forClick">
         <v-radio   value="true" color="#E57373">
           <template v-slot:label>
           <div class="checkboxWord">Deactivate alarm by using the magnet</div>
@@ -37,7 +37,7 @@
         </v-radio>
       </v-radio-group>
       <div class="bigBox ">
-        <v-radio-group class="bigBoxitem1" v-model="checknum1" @click="toggleRadio(checknum1,5)" hide-details>
+        <v-radio-group class="bigBoxitem1" v-model="checknum1" @click="toggleRadio(checknum1,5)" hide-details :disabled="forClick">
           <v-radio   value="true" color="#E57373">
             <template v-slot:label>
             <div class="checkboxWord">Number of consecutive out of specification readings</div>
@@ -45,12 +45,12 @@
           </v-radio>
         </v-radio-group>
         <div class="combinBox">
-          <Input class="smallinputCss" v-model="alerm[5]" :border="false" size="small" />
+          <Input class="smallinputCss" v-model="alerm[5]" :border="false" size="small" :disabled="forClick"/>
           <div class="ml-5 unitWord">m</div>
         </div>
       </div>
       <div class="bigBox mt-4">
-        <v-radio-group class="bigBoxitem1" v-model="checknum2" @click="toggleRadio(checknum2,6)" hide-details>
+        <v-radio-group class="bigBoxitem1" v-model="checknum2" @click="toggleRadio(checknum2,6)" hide-details :disabled="forClick">
           <v-radio   value="true" color="#E57373">
             <template v-slot:label>
             <div class="checkboxWord">Total number of out of specification readings</div>
@@ -58,7 +58,7 @@
           </v-radio>
         </v-radio-group>
         <div class="combinBox">
-          <Input class="smallinputCss" v-model="alerm[6]" :border="false" size="small" />
+          <Input class="smallinputCss" v-model="alerm[6]" :border="false" size="small" :disabled="forClick" />
           <div class="ml-5 unitWord">m</div>
         </div>
       </div>
@@ -77,6 +77,8 @@
     font-size: 35px;
     letter-spacing: 0.5px;
     font-weight: 500;
+    display: flex;
+    align-items: center;
   }
   .InputDatacard{
     width: 100%;
@@ -130,6 +132,10 @@
   font-size: 17px;
   font-weight: bolder;
 }
+.starSymbol{
+    color: red;
+    font-size: 20px;
+  }
   </style>
   
   <script>
@@ -139,12 +145,18 @@
     },
       data() {
       return {
-          alerm:["","","","","","","",""],
+          alerm:["","","","","","0","0",""],
           checknum1:"",
           checknum2:"",
        }
       },
+      computed: {
+        forClick() {
+          return this.alerm[0] !== "true" ||this.alerm[0] === "" && this.alerm[1] !== "true" || this.alerm[1] === "";
+        }
+      },
       mounted() {
+        
       },
       methods: {
         toggleRadio(value,index) {
@@ -178,7 +190,7 @@
                 ],
         };
         this.$emit('dataToParent', passData);
-      }
+      },
       }
   }
   </script>

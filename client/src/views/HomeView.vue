@@ -2,7 +2,7 @@
   <div class="home">
     <div class="configureBackdrop" v-show="configureModal || downloadModal || getMapmodal || downloadResultmodal"></div>
     <div class="configureBox" v-show="configureModal">
-      <Configure @close-modal="closeConfigureModal"></Configure>
+      <Configure @close-modal="closeConfigureModal" :configMapdata="Mapdata"></Configure>
     </div>
     <div class="resultBox" v-show="downloadResultmodal">
       <loading v-if="Downloading"></loading>
@@ -38,8 +38,9 @@
     <div class="item1">
       <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
       <v-btn class="btnword" size="50" icon="mdi mdi-download" @click="downloadModal = true"></v-btn>
-      <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="configureModal = true"></v-btn>
-      <v-btn class="btnword" size="50" icon="mdi mdi-map-search" @click="Getmap"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="statConfigure"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-map-search" @click="Getmap(1)"></v-btn>
+      <v-btn class="btnword" size="50" icon="mdi mdi-magnify-scan" ></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-clipboard-text-search" ></v-btn>
       
     </div>
@@ -186,7 +187,7 @@
   flex-wrap: wrap;
   align-items: center;
   position: relative;
-  right: 10px;
+  left: 60px;
   margin: 1.5% 0 ;
 }
 .checkboxWord{
@@ -195,7 +196,7 @@
   color: black;
   }
 .dowloadFinishBtn{
-  width: 40%;
+  width: 30%;
   margin: auto;
   border-radius: 20px;
   background-color: #E57373;
@@ -459,18 +460,18 @@ updateChooseDownloadPin(index, value) {
     
 },
 
-  Getmap() {
-    this.getMapmodal = true;
-    let ret = null;
-    window.electronApi.send('getMap', JSON.stringify({}));
+  Getmap(num) {
+    if(num == 1) this.getMapmodal = true;
+    // let ret = null;
+    // window.electronApi.send('getMap', JSON.stringify({}));
     
-    window.electronApi.on('getMap', (e, data) => { 
-        console.log('Received data from main process:', JSON.parse(data));
-        ret = JSON.parse(data);
-        this.processMapData(ret);
-    });
-    /*let ret = {"1":"39-24","2":"39-79","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"","11":"","12":"","13":"","14":"","15":"","16":""};
-    this.processMapData(ret);*/
+    // window.electronApi.on('getMap', (e, data) => { 
+    //     console.log('Received data from main process:', JSON.parse(data));
+    //     ret = JSON.parse(data);
+    //     this.processMapData(ret);
+    // });
+    let ret = {"1":"39-24","2":"39-79","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"","11":"","12":"","13":"","14":"","15":"","16":""};
+    this.processMapData(ret);
 },
 
 processMapData(ret) {
@@ -490,6 +491,10 @@ processMapData(ret) {
           data = [];
         }
     }
+},
+statConfigure(){
+  this.configureModal = true;
+  this.Getmap(2);
 }
 }
 }

@@ -16,6 +16,7 @@
           <div>
             <div class="dataTital">Interval between each reading<p class="starSymbol ml-5">∗</p></div>
             <div class="warmTital" v-if="localintervalWarm">Please provide the required information.</div>
+            <div class="warmTital" v-if="intervalNumberWarm">Fields can only be filled with numbers</div>
             <div class="combinBox">
               <Input class="smallinputCss" v-model="localintervalreadDays" :border="false" size="small" />
               <div class="ml-5 unitWord">Days</div>
@@ -38,6 +39,7 @@
         <div class="inputItem2">
           <div class="dataTital2">Start new log trip <p class="starSymbol ml-5">∗</p></div>
           <div class="warmTital" v-if="localstartTripWarm">Please provide the required information.</div>
+          <div class="warmTital" v-if="StartNumberWarm">Fields can only be filled with numbers</div>
           <div class="chooseLogtripBox">
             <div class="chooseLogtripBoxitem1">
               <v-radio-group class="checkBox " v-model="localstartTrip" @click="toggleRadio" hide-details>
@@ -82,6 +84,7 @@
           </div>
           <div class="dataTital">Finish log trip<p class="starSymbol ml-5">∗</p></div>
           <div class="warmTital" v-if="localfinishTripWarm">Please provide the required information.</div>
+          <div class="warmTital" v-if="FinishNumberWarm">Fields can only be filled with numbers</div>
           <div class="chooseLogtripBox">
             <div class="chooseLogtripBoxitem1">
               <v-radio-group class="checkBox " v-model="localfinishTrip" @click="toggleRadio2" hide-details>
@@ -248,11 +251,23 @@
         type: String,
         required: true
       },
+      intervalread: {
+        type: String,
+        required: true
+      },
+      startTrip: {
+        type: String,
+        required: true
+      },
+      finishTrip: {
+        type: String,
+        required: true
+      },
     },
       data() {
       return {
           localitems:["1day", "2days", "3days", "4days", "5days", "6days", "7days"],
-          localduration:this.duration,
+          localduration:this.duration == "" ? "":this.duration == "1" ? this.duration + "day":this.duration + "days",
           localintervalreadDays:"",
           localintervalreadHours:"",
           intervalreadMinutes:"",
@@ -274,6 +289,10 @@
           localfinishTripWarm:false,
           localdurationWarm:false,
           localintervalWarm:false,
+          intervalNumberWarm:false,
+          StartNumberWarm:false,
+          FinishNumberWarm:false,
+          
 
 
 
@@ -281,6 +300,73 @@
        }
       },
       mounted() {
+        if (this.intervalread) {
+            var matches = this.intervalread.match(/(\d+)days(\d+)h(\d+)m(\d+)s/);
+            if (matches) {
+                this.localintervalreadDays = parseInt(matches[1]);
+                this.localintervalreadHours = parseInt(matches[2]);
+                this.intervalreadMinutes = parseInt(matches[3]);
+                this.localintervalreadSeconds = parseInt(matches[4]);
+            }
+        }
+        if (this.startTrip) {
+            var startmatches = this.startTrip.match(/^(\d+)\s(.+)$/);
+            var parts = "";
+            if (startmatches) {
+                var type = parseInt(startmatches[1]);
+                var value = startmatches[2];
+                this.localstartTrip = type.toString();
+                switch (type) {
+                    case 1:
+                        parts = value.match(/(\d+)h(\d+)m/);
+                        if (parts) {
+                            this.localstart1Hour = parts[1];
+                            this.localstart1Minute = parts[2];
+                        }
+                        break;
+                    case 2:
+                        parts = value.match(/(\d+)days(\d+)h(\d+)m/);
+                        if (parts) {
+                            this.localstart2Days = parts[1];
+                            this.localstart2Hour = parts[2];
+                            this.localstart2Minute = parts[3];
+                        }
+                        break;
+                    case 3:
+                        this.localstart3Date = value.trim();
+                        break;
+                    default:
+                        console.log("Invalid input type for interval");
+                }
+            }
+          }
+          if (this.finishTrip) {
+            var finishmatches = this.finishTrip.match(/^(\d+)\s(.+)$/);
+            var finishparts = "";
+            if (finishmatches) {
+                var finishtype = parseInt(finishmatches[1]);
+                var finishvalue = finishmatches[2];
+                this.localfinishTrip = finishtype.toString();
+                switch (finishtype) {
+                    case 1:
+                      this.localfinish1Read = finishvalue.trim();
+                      break;
+                    case 2:
+                      finishparts = finishvalue.match(/(\d+)days(\d+)h(\d+)m/);
+                        if (finishparts) {
+                            this.localfinish2Days = finishparts[1];
+                            this.localfinish2Hour = finishparts[2];
+                            this.localfinish2Minute = finishparts[3];
+                        }
+                        break;
+                    case 3:
+                        this.localfinish3Date = finishvalue.trim();
+                        break;
+                    default:
+                        console.log("Invalid input type for finishTrip");
+                }
+            }
+          }
       },
       methods: {
         toggleRadio() {
@@ -312,39 +398,68 @@
         }
         if(this.localintervalreadDays == "" ||this.localintervalreadHours == "" ||this.intervalreadMinutes == "" ||this.localintervalreadSeconds == ""){
           this.localintervalWarm = true;
-        }else{
+          this.intervalNumberWarm = false;
+        }else if(!/^\d+$/.test(this.localintervalreadDays) || !/^\d+$/.test(this.localintervalreadHours) || !/^\d+$/.test(this.intervalreadMinutes) || !/^\d+$/.test(this.localintervalreadSeconds)) {
+          this.intervalNumberWarm = true;
           this.localintervalWarm = false;
+        } else{
+          this.localintervalWarm = false;
+          this.intervalNumberWarm = false;
         }
         if(this.localstartTrip == '1' && this.localstart1Hour !== "" && this.localstart1Minute !== ""){
           this.localstartTripWarm = false;
-          localstartTripData = this.localstartTrip+" "+this.localstart1Hour+"h"+this.localstart1Minute+"m";
+          if(!/^\d+$/.test(this.localstart1Hour) || !/^\d+$/.test(this.localstart1Minute)) this.StartNumberWarm = true;
+          else{
+            this.StartNumberWarm = false;
+            localstartTripData = this.localstartTrip+" "+this.localstart1Hour+"h"+this.localstart1Minute+"m";
+          }
         }else if (this.localstartTrip == '2' && this.localstart2Days !== "" && this.localstart2Hour !== "" && this.localstart2Minute !== ""){
           this.localstartTripWarm = false;
-          localstartTripData = this.localstartTrip+" "+this.localstart2Days+"days"+this.localstart2Hour+"h"+this.localstart2Minute+"m";
+          if(!/^\d+$/.test(this.localstart2Days) || !/^\d+$/.test(this.localstart2Hour) || !/^\d+$/.test(this.localstart2Minute)) this.StartNumberWarm = true;
+          else{
+            this.StartNumberWarm = false;
+            localstartTripData = this.localstartTrip+" "+this.localstart2Days+"days"+this.localstart2Hour+"h"+this.localstart2Minute+"m";
+          }
         }else if (this.localstartTrip == '3' && this.localstart3Date !== ""){
           this.localstartTripWarm = false;
-          localstartTripData = this.localstartTrip+" "+this.localstart3Date;
+          if(!/^\d+$/.test(this.localstart3Date)) this.StartNumberWarm = true;
+          else{
+            this.StartNumberWarm = false;
+            localstartTripData = this.localstartTrip+" "+this.localstart3Date;
+          }
         }else {
           this.localstartTripWarm = true;
         }
         if(this.localfinishTrip == '1' && this.localfinish1Read !== ""){
           this.localfinishTripWarm = false;
-          localfinishTripData = this.localfinishTrip+" "+this.localfinish1Read;
+          if(!/^\d+$/.test(this.localfinish1Read)) this.FinishNumberWarm = true;
+          else{
+            this.FinishNumberWarm = false;
+            localfinishTripData = this.localfinishTrip+" "+this.localfinish1Read;
+          }
         }else if (this.localfinishTrip == '2' && this.localfinish2Days !== "" && this.localfinish2Hour !== "" && this.localfinish2Minute !== ""){
           this.localfinishTripWarm = false;
-          localfinishTripData = this.localfinishTrip+" "+this.localfinish2Days+"days"+this.localfinish2Hour+"h"+this.localfinish2Minute+"m";
+          if(!/^\d+$/.test(this.localfinish2Days) || !/^\d+$/.test(this.localfinish2Hour) || !/^\d+$/.test(this.localfinish2Minute)) this.FinishNumberWarm = true;
+          else{
+            this.FinishNumberWarm = false;
+            localfinishTripData = this.localfinishTrip+" "+this.localfinish2Days+"days"+this.localfinish2Hour+"h"+this.localfinish2Minute+"m";
+          }
         }else if (this.localfinishTrip == '3' && this.localfinish3Date !== ""){
           this.localfinishTripWarm = false;
-          localfinishTripData = this.localfinishTrip+" "+this.localfinish3Date;
+          if(!/^\d+$/.test(this.localfinish3Date)) this.FinishNumberWarm = true;
+          else{
+            this.FinishNumberWarm = false;
+            localfinishTripData = this.localfinishTrip+" "+this.localfinish3Date;
+          }
         }else {
           this.localfinishTripWarm = true;
         }
-        if(this.localdurationWarm == false && this.localintervalWarm == false && this.localstartTripWarm == false && this.localfinishTripWarm == false){
+        if(this.localdurationWarm == false && this.localintervalWarm == false && this.localstartTripWarm == false && this.localfinishTripWarm == false && this.intervalNumberWarm == false && this.StartNumberWarm == false){
           passData = {
-            localduration: this.localduration == "1day" ? this.localduration.replace("day", ""):this.localduration.replace("days", ""),
+            duration: this.localduration == "1day" ? this.localduration.replace("day", ""):this.localduration.replace("days", ""),
             intervalread:this.localintervalreadDays+"days"+this.localintervalreadHours+"h"+this.intervalreadMinutes+"m"+this.localintervalreadSeconds+"s",
-            localstartTrip:localstartTripData,
-            localfinishTrip:localfinishTripData
+            startTrip:localstartTripData,
+            finishTrip:localfinishTripData
           };
         }else{
           passData = "false"
