@@ -25,7 +25,7 @@
       <v-radio-group class="checkBox " v-model="alerm[3]" @click="toggleRadio(alerm[3],3)" hide-details :disabled="forClick">
         <v-radio   value="true" color="#E57373">
           <template v-slot:label>
-          <div class="checkboxWord">EAudible alarm and alarm link activation</div>
+          <div class="checkboxWord">Audible alarm and alarm link activation</div>
         </template>
         </v-radio>
       </v-radio-group>

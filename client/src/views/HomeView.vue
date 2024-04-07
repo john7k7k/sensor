@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="configureBackdrop" v-show="configureModal || downloadModal || getMapmodal || downloadResultmodal"></div>
+    <div class="configureBackdrop" v-show="configureModal || downloadModal || getMapmodal || downloadResultmodal || ScanModal || Scanresultmodal"></div>
     <div class="configureBox" v-show="configureModal">
       <Configure @close-modal="closeConfigureModal" :configMapdata="Mapdata"></Configure>
     </div>
@@ -26,6 +26,28 @@
       </div>
         <v-btn class="dowloadFinishBtn"  @click="Startdownload" flat>Download</v-btn>
     </div>
+    <div class="resultBox" v-show="Scanresultmodal">
+      <loading v-if="Scaning"></loading>
+      <div class="resultTital" v-if="!Scaning">Scan results data sheet</div>
+      <div class="ResultTableBox" v-if="!Scaning">
+        <Table  border v-for="(num,index) in Downloaddata" :key="num" :columns="Resultcolumns" :data="Downloaddata[index]"></Table>
+      </div>
+      <v-btn class="dowloadFinishBtn"  @click="Scanresultmodal = false" flat v-if="!Scaning">Confirm</v-btn>
+    </div>
+    <div class="downloadBox" v-show="ScanModal">
+      <div class="downloadTital">Select the pin you want to scan</div>
+      <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="ScanModal = false"></v-btn>
+      
+      <div class="choosePinBox">
+        <v-radio-group @click="togglescanRadio(name)"  v-for="(name,index) in chooseScanPinName" :key="name" v-model="chooseScanPin[index]"  hide-details>
+          <v-radio class="checkboxWord" :label="name" :value="(index+1).toString()" color="#E57373" :input-value="chooseScanPin[index] === index+1"></v-radio>
+        </v-radio-group>
+        <v-radio-group  v-model="chooseScanPin[16]" @click="togglescanRadio(17)"  hide-details>
+          <v-radio class="checkboxWord" label="All" value="17" color="#E57373"></v-radio>
+        </v-radio-group>
+      </div>
+        <v-btn class="dowloadFinishBtn"  @click="StartScan" flat>Scan</v-btn>
+    </div>
     <div class="getMapBox" v-show="getMapmodal">
       <div class="downloadTital ">Foot position and description comparison table</div>
       <v-btn class="closedownloadBtn" density="comfortable" icon="$close" variant="plain" @click="getMapmodal = false"></v-btn>
@@ -37,10 +59,10 @@
     </div>
     <div class="item1">
       <v-img src="../assets/sgslogo去背.png" alt="logo" width="150" class="logoimage" ></v-img>
+      <v-btn class="btnword" size="50" icon="mdi mdi-magnify-scan" @click="ScanModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-download" @click="downloadModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="statConfigure"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-map-search" @click="Getmap(1)"></v-btn>
-      <v-btn class="btnword" size="50" icon="mdi mdi-magnify-scan" ></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-clipboard-text-search" ></v-btn>
       
     </div>
@@ -279,6 +301,7 @@ export default {
     receivedData:'',
     configureModal:false,
     downloadModal:false,
+    ScanModal:false,
     getMapmodal:false,
     data:[
       {
@@ -295,6 +318,8 @@ export default {
     ],
     chooseDownloadPinName:["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15","16"],
     chooseDownloadPin:["", "", "", "", "", "", "", "", "", "", "", "","","","","",""],
+    chooseScanPinName:["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15","16"],
+    chooseScanPin:["", "", "", "", "", "", "", "", "", "", "", "","","","","",""],
     columns: [
                     {
                         title: 'Pin',
@@ -327,7 +352,9 @@ export default {
     Downloaddata:[],
     Mapdata:[],
     downloadResultmodal:false,
+    Scanresultmodal:false,
     Downloading:true,
+    Scaning:true,
     ConfigurepassData:{
       description: "",
       beeper: true,
@@ -368,6 +395,12 @@ export default {
     this.handleData(data);
   },
   handleData(data) {
+    this.sensorNumber = [];
+    this.totalTime = [];
+    this.sensorTem = [];
+    this.sensorHum = [];
+    this.sensorTime = [];
+    this.sensorDate = [];
     for (var i = 0; i < data.length; i++) {
       this.sensorNumber.push(data[i].ID);
       this.totalTime.push(data[i].totalTime);
@@ -417,9 +450,22 @@ export default {
     }
   }
 },
-updateChooseDownloadPin(index, value) {
-        this.chooseDownloadPin[index] = value ? (index + 1).toString() : "";
-    },
+togglescanRadio(PinNum) {
+  PinNum = parseInt(PinNum) - 1;
+  if (PinNum === 16) {
+    if (this.chooseScanPin[PinNum] === "") {
+      this.chooseScanPin = Array.from({length: 17}, (_, index) => (index + 1).toString());
+    } else {
+      this.chooseScanPin = Array.from({length: 17}, () => "");
+    }
+  } else {
+    if (this.chooseScanPin[PinNum] !== "") {
+      this.chooseScanPin[PinNum] = "";
+    } else {
+      this.chooseScanPin[PinNum] = (PinNum + 1).toString();
+    }
+  }
+},
   Startdownload(){
     this.downloadModal = false;
     this.downloadResultmodal = true;
@@ -447,7 +493,12 @@ updateChooseDownloadPin(index, value) {
       } else {
         this.Downloaddata = [formattedData];
       }
+      window.electronApi.on('init', (e, data) => {
+        this.handleReceivedData(JSON.parse(data));
+      });
+      window.electronApi.send('init', JSON.stringify({}));
       this.Downloading = false;
+      
     };
     /*processData({
         "1": { description: '39-24', state: 'download succfully' },
@@ -459,18 +510,52 @@ updateChooseDownloadPin(index, value) {
     });
     
 },
+  StartScan(){
+    this.ScanModal = false;
+    this.Scanresultmodal = true;
+    this.Scaning = true;
+    let scanPin = [];
+    for(let i=0; i<16; i++) {
+      if(this.chooseScanPin[i] !== "") scanPin.push(this.chooseScanPin[i]);
+    }
+    window.electronApi.send('scan', JSON.stringify({
+        selects: scanPin
+    }));
+    const processScanData = (data) => {
+      console.log('Received data from main process:', data);
+      if (Object.prototype.hasOwnProperty.call(data, 'descriptionMap')) {
+        delete data.descriptionMap;
+      }
+      const formattedData = Object.entries(data).map(([pin, item]) => ({
+        pin,
+        state: item.state || 'MCU not ack', 
+        description: item.description || 'Null', 
+      }));
+      if (formattedData.length > 8) {
+        this.Downloaddata = [formattedData.slice(0, 8), formattedData.slice(8)];
+      } else {
+        this.Downloaddata = [formattedData];
+      }
+      this.Scaning = false;
+      
+    };
+    window.electronApi.on('scan', (e, data) => {
+      processScanData(JSON.parse(data));
+    });
+    
+},
 
   Getmap(num) {
     if(num == 1) this.getMapmodal = true;
-    // let ret = null;
-    // window.electronApi.send('getMap', JSON.stringify({}));
+    let ret = null;
+    window.electronApi.send('getMap', JSON.stringify({}));
     
-    // window.electronApi.on('getMap', (e, data) => { 
-    //     console.log('Received data from main process:', JSON.parse(data));
-    //     ret = JSON.parse(data);
-    //     this.processMapData(ret);
-    // });
-    let ret = {"1":"39-24","2":"39-79","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"","11":"","12":"","13":"","14":"","15":"","16":""};
+    window.electronApi.on('getMap', (e, data) => { 
+        console.log('Received data from main process:', JSON.parse(data));
+        ret = JSON.parse(data);
+        this.processMapData(ret);
+    });
+    // let ret = {"1":"39-24","2":"39-79","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"","11":"","12":"","13":"","14":"","15":"","16":""};
     this.processMapData(ret);
 },
 

@@ -1,5 +1,6 @@
 <template>
-  <div class="Cbox">
+  <loading v-if="Configureing"></loading>
+  <div class="Cbox" v-if="!Configureing">
     <div class="tital">Program and Configure</div> 
     <div class="warmTital mb-2" v-if="Step0show">
       <p>Please select the pin corresponding to the Description you want to configure.</p>
@@ -40,7 +41,7 @@
       <ConfigurePage2 v-if="Step2show" ref="childComponent2" @dataToParent="handleDataFromChild2" :duration="answer2.duration" :intervalread="answer2.intervalread"
         :startTrip="answer2.startTrip" :finishTrip="answer2.finishTrip"></ConfigurePage2>
       <ConfigurePage3 v-if="Step3show" ref="childComponent3" @dataToParent="handleDataFromChild3"></ConfigurePage3>
-      <ConfigurePage4 v-if="Step4show"></ConfigurePage4>
+      <ConfigurePage4 v-if="Step4show" :totalPassdata="totalPassdata" :configureID="configureID"></ConfigurePage4>
     </div>
     <div class="btnBox">
       <v-btn  rounded="xl" prepend-icon="mdi mdi-chevron-left" class="backbtnIcon" @click="Backpage"><div class="btnWord">Back</div></v-btn>
@@ -164,10 +165,11 @@ import ConfigurePage1 from '@/components/ConfigurePage1.vue'
 import ConfigurePage2 from '@/components/ConfigurePage2.vue'
 import ConfigurePage3 from '@/components/ConfigurePage3.vue'
 import ConfigurePage4 from '@/components/ConfigurePage4.vue'
+import loading from '@/components/loading.vue'
   export default {
     name: 'HomeView',
     components: {
-      ConfigurePage1,ConfigurePage2,ConfigurePage3,ConfigurePage4
+      ConfigurePage1,ConfigurePage2,ConfigurePage3,ConfigurePage4,loading
       },
     props: {
       configMapdata: {
@@ -221,6 +223,8 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
                         width:"150"
                     },
                 ],
+        Configureing:false,
+        configureID:"",
       }
     },
     mounted() {
@@ -299,14 +303,15 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
             ...this.answer2,
             ...this.answer3
           };
-          alert(JSON.stringify(this.totalPassdata));
-          // window.electronApi.send('configure', JSON.stringify({
-          //     mode: "check", //"anyway"
-          //     ConfigurepassData:this.totalPassdata
-          // }));
-          // window.electronApi.on('configure', (e, data) => {
-          //   this.handleReceivedData(JSON.parse(data));
-          // });
+          this.Configureing = true;
+          // alert(JSON.stringify(this.totalPassdata));
+          window.electronApi.send('configure', JSON.stringify({
+              mode: "check", //"anyway"
+              ConfigurepassData:this.totalPassdata
+          }));
+          window.electronApi.on('configure', (e, data) => {
+            this.handleReceivedData(JSON.parse(data));
+          });
           this.Step4show = true;
           this.Step0show = this.Step1show = this.Step2show = this.Step3show = false;
           this.Step1done = this.Step2done = this.Step3done = true; 
@@ -318,18 +323,21 @@ import ConfigurePage4 from '@/components/ConfigurePage4.vue'
       },
       handleReceivedData(data) {
         console.log('Received data from main process:', data);
+        this.configureID = data.datadescription;
+        if(data.state == "OK") this.Configureing = false;
+        else this.Configureing = false;
       },
       handleDataFromChild(data) {
       this.answer1 = data;
-      alert(JSON.stringify(this.answer1));
+      // alert(JSON.stringify(this.answer1));
       },
       handleDataFromChild2(data) {
         this.answer2 = data;
-        alert(JSON.stringify(this.answer2));
+        // alert(JSON.stringify(this.answer2));
       },
       handleDataFromChild3(data) {
         this.answer3 = data;
-        alert(JSON.stringify(this.answer3));
+        // alert(JSON.stringify(this.answer3));
       },
 
     }
