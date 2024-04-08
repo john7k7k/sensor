@@ -4,7 +4,8 @@
         <div class="inputItem1">
           <div>
             <div class="dataTital">Pin(0-15)<p class="starSymbol ml-5">∗</p></div>
-            <div class="warmTital" v-if="SensorIDWarm">Please provide the required information.</div>
+            <div class="warmTital" v-if="SensorIDWarm">Please enter a number between 0 and 15.</div>
+            <div class="warmTital" v-if="SensorIDNumberWarm">The number entered must be between 0 and 15.</div>
             <Input class="inputCss" v-model="localSensorID" :border="false" size="small" />
           </div>
           <div>
@@ -18,10 +19,13 @@
         </div>
         <div class="inputItem2">
           <div class="dataTital">Minimum</div>
+          <div class="warmTital" v-if="localMinimumWarm">Please enter a number between -40.5 and 70.5</div>
           <Input class="inputCss" v-model="localMinimum" :border="false" size="small" />
           <div class="dataTital2">Maximum</div>
+          <div class="warmTital" v-if="localMaximumWarm">Please enter a number between -40.5 and 70.5</div>
           <Input class="inputCss" v-model="localMaximum" :border="false" size="small" />
           <div class="dataTital2">Increment</div>
+          <div class="warmTital" v-if="localIncrementWarm">Please enter a number.</div>
           <Input class="inputCss" v-model="localIncrement" :border="false" size="small" />
         </div>
     </div>
@@ -118,10 +122,14 @@
         localchoosevalue1: this.choosevalue1.toString(),
         localchoosevalue2: this.choosevalue2.toString(),
         localSensorID: this.SensorID,
-        localMinimum: this.minimum,
-        localMaximum: this.maximum,
-        localIncrement: this.increment,
-        SensorIDWarm:false
+        localMinimum: this.minimum === "def" ? "": this.minimum,
+        localMaximum: this.maximum === "def" ? "": this.maximum,
+        localIncrement: this.increment === "def" ? "": this.increment,
+        SensorIDWarm:false,
+        SensorIDNumberWarm:false,
+        localMaximumWarm:false,
+        localMinimumWarm:false,
+        localIncrementWarm:false,
       }
     },
     mounted() {
@@ -142,19 +150,55 @@
         }
       },
       PassData() {
+        let pin = "";
+        let minimum = "";
+        let maximum = "";
+        let increment = "";
         if (this.localSensorID.trim() === "" || !/^\d+$/.test(this.localSensorID)) {
             this.SensorIDWarm = true;
-            this.localSensorID = "nodata";
-        } else {
-            this.SensorIDWarm = false;
+            pin = "nodata";
+        } else if(parseInt(this.localSensorID, 10) < 0 || parseInt(this.localSensorID, 10) > 15){
+            this.SensorIDNumberWarm = true;
+            this.SensorIDWarm =  false;
+            pin = "nodata";
+        }else{
+          this.SensorIDWarm = this.SensorIDNumberWarm = false;
+          pin = this.localSensorID.trim();
+        }
+        if (parseInt(this.localSensorID, 10) < -40.5 || parseInt(this.localSensorID, 10) > 70.5) {
+            this.localMinimumWarm = true;
+            minimum = "nodata";
+        }else if(this.localMinimum.trim() === "" || !/^\d+$/.test(this.localMinimum)){
+          minimum = "def";
+        }else{
+          this.localMinimumWarm = false;
+          minimum = this.localMinimum.trim();
+        }
+        if (parseInt(this.localMaximum, 10) < -40.5 || parseInt(this.localMaximum, 10) > 70.5) {
+            this.localMaximumWarm = true;
+            maximum = "nodata";
+        }else if(this.localMaximum.trim() === "" || !/^\d+$/.test(this.localMaximum)){
+          maximum = "def";
+        }else{
+          this.localMaximumWarm = false;
+          maximum = this.localMaximum.trim();
+        }
+        if (this.localIncrement.trim() === ""){
+          increment = "def";
+        }else if(!/^\d+$/.test(this.localIncrement)){
+          this.localIncrementWarm = true;
+          increment = "nodata";
+        }else{
+          this.localIncrementWarm = false;
+          increment = this.localIncrement.trim();
         }
         let passData = {
-            pin: this.localSensorID,
+            pin: pin,
             beeper: this.localchoosevalue1 !== "" ? true : false,
             newbattery: this.localchoosevalue2 !== "" ? true : false,
-            minimum: this.localMinimum,
-            maximum: this.localMaximum,
-            increment: this.localIncrement
+            minimum: minimum,
+            maximum: maximum,
+            increment: increment
           };
         this.$emit('dataToParent', passData);
       }

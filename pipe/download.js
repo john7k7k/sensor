@@ -118,10 +118,10 @@ module.exports = ( ipcMain ) => {
             fs.readdir('datas', (err, fileNames) => {  
                 if(!description) description = 'data';
                 if(fileNames.find(fileName => fileName === description + '.csv')){
-                    updateCSV(path.join('datas/', description + '.csv'), exeData );
+                    updateCSV(path.join( __dirname,'../','datas', description + '.csv'), exeData );
                 }
                 else{
-                    saveCSV(`datas/${description}.csv`, exeData);
+                    saveCSV(path.join( __dirname,'../','datas', description + '.csv'), exeData);
                 }
             })
         }

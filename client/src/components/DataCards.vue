@@ -245,6 +245,7 @@ export default {
       chartInstance: null, 
       selectedTemtime:'Now',
       selectedHumtime:'Now',
+      canSwitchTab: true,
     }
   },
   mounted() {
@@ -278,33 +279,39 @@ export default {
   },
   methods: {
     createChart() {
-      let chartId = this.tab === 'one' ? this.chartId : this.secondId;
-      const chartElement = document.getElementById(chartId);
-      const data = {
-        labels: this.sensorTime,
-        datasets: [{
-          label: this.sensorDate,
-          data: this.tab === 'one' ? this.sensorTem : this.sensorHum,
-          backgroundColor: this.tab === 'one' ? '#E53935' : '#2196F3',
-          borderColor: this.tab === 'one' ? '#E53935' : '#2196F3',
-          borderWidth: 1
-        }]
-      };
-      if (this.chartInstance) {
-        this.chartInstance.destroy();
-      }
-      this.chartInstance = new Chart(chartElement, {
-        type: 'line',
-        data: data,
-        options: {
-          layout: {
-            padding: {
-              top: -10
+        if (this.canSwitchTab) {
+          setTimeout(() => {
+            let chartId = this.tab === 'one' ? this.chartId : this.secondId;
+            const chartElement = document.getElementById(chartId);
+            const data = {
+              labels: this.sensorTime,
+              datasets: [{
+                label: this.sensorDate,
+                data: this.tab === 'one' ? this.sensorTem : this.sensorHum,
+                backgroundColor: this.tab === 'one' ? '#E53935' : '#2196F3',
+                borderColor: this.tab === 'one' ? '#E53935' : '#2196F3',
+                borderWidth: 1
+              }]
+            };
+            if (this.chartInstance) {
+              this.chartInstance.destroy();
             }
-          }
+            this.chartInstance = new Chart(chartElement, {
+              type: 'line',
+              data: data,
+              options: {
+                layout: {
+                  padding: {
+                    top: -10
+                  }
+                }
+              }
+            });
+            this.canSwitchTab = true; // Reset the switch flag after 3 seconds
+          }, 500); // 3 seconds delay
+          this.canSwitchTab = false; // Prevent switching tabs during the delay
         }
-      });
-    },
+      }
   }
 }
 </script>
