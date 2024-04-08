@@ -4,6 +4,7 @@ const path = require('path');
 const test = require('./test');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
+const { app } = require('electron');
 //let port = new SerialPort({ path: "COM14", baudRate: 9600 })
 
 const { chooseSensor } = require('./tool/port.js');
@@ -87,12 +88,12 @@ module.exports = ( ipcMain ) => {
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
             resData[select] = {};
-            // const MCUack = await chooseSensor(select);
-            // if(!MCUack){
-            //    resData[select].state = 'MCU  not ack';
-            //    resData[select].description = decMap[select];
-            //    continue;
-            // } ;
+            const MCUack = await chooseSensor(select);
+            if(!MCUack){
+               resData[select].state = 'MCU  not ack';
+               resData[select].description = decMap[select];
+               continue;
+            } ;
             
             let exeData = await callExe('loading.exe');
             if(exeData.split)
@@ -115,13 +116,13 @@ module.exports = ( ipcMain ) => {
             decMapf.updateDecMap(select, description);
             resData[select].description = description;
             resData[select].state = 'OK';
-            fs.readdir('datas', (err, fileNames) => {  
+            fs.readdir(path.join(app.getPath('userData'),'SGS/datas'), (err, fileNames) => {  
                 if(!description) description = 'data';
                 if(fileNames.find(fileName => fileName === description + '.csv')){
-                    updateCSV(path.join( __dirname,'../','datas', description + '.csv'), exeData );
+                    updateCSV(path.join(app.getPath('userData'),'SGS/datas', description + '.csv'), exeData );
                 }
                 else{
-                    saveCSV(path.join( __dirname,'../','datas', description + '.csv'), exeData);
+                    saveCSV(path.join( app.getPath('userData'),'SGS/datas', description + '.csv'), exeData);
                 }
             })
         }

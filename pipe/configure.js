@@ -35,12 +35,6 @@ module.exports = ( ipcMain ) => {
         let { pin } = ConfigurepassData;
         let description = decMap[pin];
         let select = pin;
-        // for(let _select in decMap){
-        //     if(decMap[_select] === description){
-        //         select = _select;
-        //         break;
-        //     }
-        // }
         if(!select){
             resData = {
                 description,
@@ -60,7 +54,6 @@ module.exports = ( ipcMain ) => {
         // }
         let exeArg = convertExeArg(ConfigurepassData, description)
         let exeData = await callExe('configuration.exe ' , exeArg);
-        //let exeData = await callExe('configuration.exe', 'def -20 70 5 F_F_F_F_F_F_F 0 0 U 00days00h00m06s 2 00days00h01m 1 10 T F 39-78'.split(' '));
         //console.log(exeData.split("\n")[0])
         if(exeData.split("\n")[0] === "Can't find Program and Configure window"){
             resData = {

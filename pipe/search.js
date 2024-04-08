@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const folderPath = path.join(__dirname, '../datas');
+const { app } = require('electron');
+const folderPath = path.join(app.getPath('userData'), 'SGS/datas');
 
 module.exports = ( ipcMain ) => {
     ipcMain.on('search', (e, mes) => {
