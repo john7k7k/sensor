@@ -12,37 +12,37 @@ module.exports = ( ipcMain ) => {
                 if (mes[i].startTime !== undefined) {
                     console.log(mes[i].startTime);
                     if (mes[i].endTime !== undefined) {
-                        data1 = readData(path.join(folderPath, mes[0].ID + '.csv'));
+                        data1 = readData(path.join(folderPath, mes[i].ID + '.csv'));
                         resData.push({
-                            ID: mes[0].ID,
+                            ID: mes[i].ID,
                             data: formatData(
                                 data1.slice(
-                                    findClosestTime(data1, mes[0].startTime),
-                                    findClosestTime(data1, mes[0].endTime) + 1
+                                    findClosestTime(data1, mes[i].startTime),
+                                    findClosestTime(data1, mes[i].endTime) + 1
                                 )
                             )
                         });
                     } else {
-                        data2 = readData(path.join(folderPath, mes[1].ID + '.csv'));
-                        indexOfStartTime = findClosestTime(data2, mes[1].startTime);
+                        data2 = readData(path.join(folderPath, mes[i].ID + '.csv'));
+                        indexOfStartTime = findClosestTime(data2, mes[i].startTime);
                         resData.push({
-                            ID: mes[1].ID,
+                            ID: mes[i].ID,
                             data: formatData(
                                 data2.slice(
                                     indexOfStartTime,
-                                    indexOfStartTime + mes[1].quantity
+                                    indexOfStartTime + mes[i].quantity
                                 )   
                             )
                         });
                     }
                 } else {
-                    data3 = readData(path.join(folderPath, mes[2].ID + '.csv'));
-                    indexOfEndTime = findClosestTime(data3, mes[2].endTime) - 1;
+                    data3 = readData(path.join(folderPath, mes[i].ID + '.csv'));
+                    indexOfEndTime = findClosestTime(data3, mes[i].endTime) - 1;
                     resData.push({
-                        ID: mes[2].ID,
+                        ID: mes[i].ID,
                         data: formatData(
                             data3.slice(
-                                indexOfEndTime - mes[2].quantity,
+                                indexOfEndTime - mes[i].quantity,
                                 indexOfEndTime
                             )
                         )
@@ -60,7 +60,7 @@ module.exports = ( ipcMain ) => {
 function readData(filePath) {
     try {
         const data = fs.readFileSync(filePath, 'utf8');
-        return data.split('\n').map(row => row.slice(0, -1).split(',')).slice(4);
+        return data.split('\n').map(row => row.slice(0, -1).split(',')).slice(5);
     } catch (err) {
         console.error("Error reading the file:", err);
         return null;
@@ -84,7 +84,6 @@ function findClosestTime(data, targetTime) {
     
     console.log(closestEntry);
     console.log(data.indexOf(closestEntry))
-
     return data.indexOf(closestEntry);
 }
 

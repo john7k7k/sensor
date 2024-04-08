@@ -13,7 +13,13 @@ function getDecMap(data){
 function updateDecMap(key, description){
     return new Promise(async (resolve, reject) => {
         let decMap = await getDecMap();
+        for(let i in decMap){
+            if(decMap[i] === description){
+                decMap[i] = '';
+            }
+        }
         decMap[key] = description;
+        
         fs.writeFile(path.join(__dirname, '../../config/desMap.json'), JSON.stringify(decMap), 'utf8', (err) => {
             if (err) {
               resolve('Error writing file:' + err);
