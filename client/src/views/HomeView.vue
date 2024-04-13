@@ -18,9 +18,9 @@
       
       <div class="choosePinBox">
         <v-radio-group @click="toggleRadio(name)"  v-for="(name,index) in chooseDownloadPinName" :key="name" v-model="chooseDownloadPin[index]"  hide-details>
-          <v-radio class="checkboxWord" :label="name" :value="(index+1).toString()" color="#E57373" :input-value="chooseDownloadPin[index] === index+1"></v-radio>
+          <v-radio class="checkboxWord" :label="name" :value="index.toString()" color="#E57373" :input-value="chooseDownloadPin[index] === index"></v-radio>
         </v-radio-group>
-        <v-radio-group  v-model="chooseDownloadPin[16]" @click="toggleRadio(17)"  hide-details>
+        <v-radio-group  v-model="chooseDownloadPin[16]" @click="toggleRadio(16)"  hide-details>
           <v-radio class="checkboxWord" label="All" value="17" color="#E57373"></v-radio>
         </v-radio-group>
       </div>
@@ -40,9 +40,9 @@
       
       <div class="choosePinBox">
         <v-radio-group @click="togglescanRadio(name)"  v-for="(name,index) in chooseScanPinName" :key="name" v-model="chooseScanPin[index]"  hide-details>
-          <v-radio class="checkboxWord" :label="name" :value="(index+1).toString()" color="#E57373" :input-value="chooseScanPin[index] === index+1"></v-radio>
+          <v-radio class="checkboxWord" :label="name" :value="index.toString()" color="#E57373" :input-value="chooseScanPin[index] === index"></v-radio>
         </v-radio-group>
-        <v-radio-group  v-model="chooseScanPin[16]" @click="togglescanRadio(17)"  hide-details>
+        <v-radio-group  v-model="chooseScanPin[16]" @click="togglescanRadio(16)"  hide-details>
           <v-radio class="checkboxWord" label="All" value="17" color="#E57373"></v-radio>
         </v-radio-group>
       </div>
@@ -63,7 +63,7 @@
       <v-btn class="btnword" size="50" icon="mdi mdi-download" @click="downloadModal = true"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-file-cog" @click="statConfigure"></v-btn>
       <v-btn class="btnword" size="50" icon="mdi mdi-map-search" @click="Getmap(1)"></v-btn>
-      <v-btn class="btnword" size="50" icon="mdi mdi-clipboard-text-search" ></v-btn>
+      <!-- <v-btn class="btnword" size="50" icon="mdi mdi-clipboard-text-search" ></v-btn> -->
       
     </div>
     <div class="item2">
@@ -82,8 +82,8 @@
       </div>
       <div class="titalword">Click on the following buttons to view the information you requeted</div>
       <div class="box">
-        <DataCards v-for="(num,index) in filteredData" :key="num" :chartId="'myChart' + num" :secondId="'secondChart' + num" 
-          :sensornum="num" :totalTime="totalTime[index]" :sensorTem="sensorTem[index]" :sensorHum="sensorHum[index]" :sensorTime="sensorTime[index]" :sensorDate="sensorDate[index]"></DataCards>
+        <DataCards v-for="(num,index) in filteredData" :key="num" ref="reloadChart" :chartId="'myChart' + sensorTime[0]" :secondId="'secondChart' + sensorTime[0]" 
+          :sensornum="num" :totalTime="totalTime[index]" :sensorTem="sensorTem[index]" :sensorHum="sensorHum[index]" :sensorTime="sensorTime[index]" :sensorDate="sensorDate[index]" :downloadfinish="downloadfinish"></DataCards>
       </div>
     </div>
   </div>
@@ -316,9 +316,9 @@ export default {
         totalTime: "00:00:48"
       }
     ],
-    chooseDownloadPinName:["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15","16"],
+    chooseDownloadPinName:["0","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15"],
     chooseDownloadPin:["", "", "", "", "", "", "", "", "", "", "", "","","","","",""],
-    chooseScanPinName:["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15","16"],
+    chooseScanPinName:["0","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15"],
     chooseScanPin:["", "", "", "", "", "", "", "", "", "", "", "","","","","",""],
     columns: [
                     {
@@ -367,10 +367,11 @@ export default {
       starttrip: "wait1h2m 或 in1days2h3m 或 at2003/3/24/13:00",
       finishtrip: "after1h 或 after1days2h3m 或 at2003/3/24/13:00",
       alerm:[true,true,false,true,true,0,0],
-    }
+    },
+    downloadfinish:false,
   }),
   mounted() {
-    //this.handleData(this.data);
+    // this.handleData(this.data);
     window.electronApi.on('init', (e, data) => {
       this.handleReceivedData(JSON.parse(data));
     });
@@ -435,10 +436,10 @@ export default {
     this.configureModal = false;
   },
   toggleRadio(PinNum) {
-  PinNum = parseInt(PinNum) - 1;
+  PinNum = parseInt(PinNum);
   if (PinNum === 16) {
     if (this.chooseDownloadPin[PinNum] === "") {
-      this.chooseDownloadPin = Array.from({length: 17}, (_, index) => (index + 1).toString());
+      this.chooseDownloadPin = Array.from({length: 17}, (_, index) => index.toString());
     } else {
       this.chooseDownloadPin = Array.from({length: 17}, () => "");
     }
@@ -446,15 +447,15 @@ export default {
     if (this.chooseDownloadPin[PinNum] !== "") {
       this.chooseDownloadPin[PinNum] = "";
     } else {
-      this.chooseDownloadPin[PinNum] = (PinNum + 1).toString();
+      this.chooseDownloadPin[PinNum] = PinNum.toString();
     }
   }
 },
 togglescanRadio(PinNum) {
-  PinNum = parseInt(PinNum) - 1;
+  PinNum = parseInt(PinNum);
   if (PinNum === 16) {
     if (this.chooseScanPin[PinNum] === "") {
-      this.chooseScanPin = Array.from({length: 17}, (_, index) => (index + 1).toString());
+      this.chooseScanPin = Array.from({length: 17}, (_, index) => index.toString());
     } else {
       this.chooseScanPin = Array.from({length: 17}, () => "");
     }
@@ -462,7 +463,7 @@ togglescanRadio(PinNum) {
     if (this.chooseScanPin[PinNum] !== "") {
       this.chooseScanPin[PinNum] = "";
     } else {
-      this.chooseScanPin[PinNum] = (PinNum + 1).toString();
+      this.chooseScanPin[PinNum] = PinNum.toString();
     }
   }
 },
@@ -498,7 +499,20 @@ togglescanRadio(PinNum) {
       });
       window.electronApi.send('init', JSON.stringify({}));
       this.Downloading = false;
-      
+    //   this.data = [
+    //   {
+    //     ID: "39-78",
+    //     data: [
+    //       { temperature: 22.1, humidity: 67.7, air: 'W', time: '2024/4/18 10:48:24' },
+    //       { temperature: 23, humidity: 67.5, air: 'W', time: '2024/4/18 10:48:30' },
+    //       { temperature: 24.1, humidity: 68.1, air: 'W', time: '2024/4/18 10:48:36' },
+    //       { temperature: 25.1, humidity: 68, air: 'W', time: '2024/4/18 10:48:42' },
+    //       { temperature: 26.1, humidity: 68, air: 'W', time: '2024/4/18 10:48:48' },
+    //     ],
+    //     totalTime: "00:01:48"
+    //   }
+    // ];
+    // this.handleData(this.data);
     };
     /*processData({
         "1": { description: '39-24', state: 'download succfully' },

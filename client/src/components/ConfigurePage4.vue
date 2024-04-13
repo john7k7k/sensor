@@ -94,8 +94,31 @@
           this.starttrip = this.parseStartTrip(starttrip);
       },
       updateFinishTripValue(finishtrip){
-        this.finishtrip = this.parseStartTrip(finishtrip);
-      }
+        this.finishtrip = this.parseFinishTrip(finishtrip);
+      },
+      parseFinishTrip(finishtrip) {
+          var match1 = finishtrip.match(/^1 (\d+)$/);
+          if (match1 !== null) {
+              var hour = parseInt(match1[1], 10);
+              var minute = parseInt(match1[2], 10);
+              return hour + " hour " + minute + " minute";
+          }
+
+          var match2 = finishtrip.match(/^2 (\d+)days(\d+)h(\d+)m$/);
+          if (match2 !== null) {
+              var day = parseInt(match2[1], 10);
+              hour = parseInt(match2[2], 10);
+              minute = parseInt(match2[3], 10);
+              return day + " day " + hour + " hour " + minute + " minute";
+          }
+
+          var match3 = finishtrip.match(/^3 (\d{4}\/\d{2}\/\d{2})\s+(上|下)\s+(\d+:\d+)$/);
+          if (match3 !== null) {
+              return match3[1] + " " + match3[3];
+          }
+
+          return finishtrip;
+      },
       }
   }
   </script>
