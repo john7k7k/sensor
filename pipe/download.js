@@ -4,23 +4,42 @@ const path = require('path');
 const test = require('./test');
 const decMapf = require('./tool/decMap.js');
 const { callExe } =  require('./tool/exe.js');
+const { app } = require('electron');
 //let port = new SerialPort({ path: "COM14", baudRate: 9600 })
 
 const { chooseSensor } = require('./tool/port.js');
 
 function convertCSV(rawData){
-    const lines = rawData.split('\n');
-    const header = [lines[0],lines[1],lines[2], lines[3]].join('\n')
-    const name = lines[5].replace('Air Temp ( XC)', 'Temp').replace('Humidity (%RH)', 'Humidity').replace('Elapsed  Time', 'Elapsed_Time').replace(/\s+/g, ',');
-    const data = lines.slice(6).map(line => line.replace(/\s+/g, ','));
-    data.pop();
-    data.pop();
-    const csvData = [name, ...data].join('\n');
-    return [ header, csvData ];
+    try{
+        const lines = rawData.split('\n');
+        const header = [lines[0],lines[1],lines[2], lines[3]].join('\n')
+        const name = lines[5].replace('Air Temp ( XC)', 'Temp').replace('Humidity (%RH)', 'Humidity').replace('Elapsed  Time', 'Elapsed_Time').replace(/\s+/g, ',');
+        const data = lines.slice(6).map(line => line.replace(/\s+/g, ','));
+        data.pop();
+        data.pop();
+        for(let ind in data){
+            let line = data[ind];
+            console.log(line.split(','))
+            if((line.split(',')[3] === 'U'&& line.split(',')[4].split(':')[0] !== '12')){
+                let element = line.split(',');
+                let time = line.split(',')[4].split(':');
+                element[4] = `${Number(time[0]) + 12}:${time[1]}:${time[2]}`
+                data[ind] = element.join(',')
+            }
+            else if(line.split(',')[4].split(':')[0] === '12' && line.split(',')[3] !== 'U'){
+                let element = line.split(',');
+                let time = line.split(',')[4].split(':');
+                element[4] = `${Number(time[0]) - 12}:${time[1]}:${time[2]}`
+                data[ind] = element.join(',')
+            }
+        }
+        const csvData = [name, ...data].join('\n');
+        return [ header, csvData ];
+    }catch(e){console.log(e)}
 }
 
-function saveCSV(path, data){
-    data = convertCSV(data).join('\n');
+function saveCSV(path, data, convert = true){
+    data = (convert?convertCSV(data).join('\n'):data);
     fs.writeFile(path, data, (err) => {
         if (err) {
             console.error(err);
@@ -30,35 +49,36 @@ function saveCSV(path, data){
     });
 }
 
-function updateCSV(path, data){
-    data = convertCSV(data).join('\n').split('\n');
+function updateCSV(path, data, convert = true){
+    data = (convert?convertCSV(data).join('\n'):data).split('\n');
     fs.readFile(path, (err, file)=>{
         file = String(file).split('\n');
         file[1] = data[1];
         let lastIndex = file.at(-1).split(',')[0];
-        data.slice(5).forEach((row, index) => {
-            data[index+5] = ++lastIndex + data[index+5].slice(1);
-        });
-        file.push(...(data.slice(5)))
-        saveCSV(path ,file.join('\n'));
+        let startIndex = data.slice(5).findIndex(row =>{ 
+            return new Date(row.split(',')[2] + ' ' + row.split(',')[4]) >
+            new Date(file.at(-1).split(',')[2] + ' ' + file.at(-1).split(',')[4])
+        })+5;
+        if(startIndex < 5) return;
+        data.slice(startIndex).forEach((row, index) => {
+            data[index+startIndex] = ++lastIndex + data[index+startIndex].slice(Math.ceil(Math.log10(index + 2)));
+        })
+        file.push(...(data.slice(startIndex)))
+        saveCSV(path ,file.join('\n'), false);
     })
-    
 }
-
-// function chooseSensor(description){
-//     return new Promise((resolve, reject) => {
-//         try{
-//             // port = new SerialPort({ path: 'COM14', baudRate: 9600 },(err) => {
-//             //     resolve(err);
-//             // });
-//             port.write(`${description}\n`);
-//             port.on('data', (data) => {
-//                 console.log('ack: ' + data);
-//                 resolve(data);
-//             })
-//         }catch(err){reject(err);}
-//     })
-// }
+// let exeData = `Serial Number: 1642-0005
+// Battery Status: 97.0 %
+// Description: 39-78
+// Product Code: EI-HS-D-32-L
+// Index,Elapsed_Time,Date,Time,Temp,Humidity,
+// 1,00:00:00,2024/2/28,U,09:07:00,23.7,74.2,
+// 2,00:00:06,2024/4/28,U,09:07:06,23.6,73.5,
+// 3,00:00:12,2024/4/28,U,09:07:12,23.6,73.7,
+// 4,00:00:18,2024/4/28,U,09:07:18,23.6,73.5,
+// 5,00:00:24,2024/4/28,U,09:07:24,23.6,73.5,`
+// let description = '39-78'
+// updateCSV(path.join('../datas/', description + '.csv'), exeData,false );
 
 module.exports = ( ipcMain ) => {
     ipcMain.on('download', async (e, mes) => {
@@ -95,13 +115,14 @@ module.exports = ( ipcMain ) => {
             }
             decMapf.updateDecMap(select, description);
             resData[select].description = description;
-            fs.readdir('datas', (err, fileNames) => {  
+            resData[select].state = 'OK';
+            fs.readdir(path.join(app.getPath('userData'),'SGS/datas'), (err, fileNames) => {  
                 if(!description) description = 'data';
                 if(fileNames.find(fileName => fileName === description + '.csv')){
-                    updateCSV(path.join('datas/', description + '.csv'), exeData );
+                    updateCSV(path.join(app.getPath('userData'),'SGS/datas', description + '.csv'), exeData );
                 }
                 else{
-                    saveCSV(`datas/${description}.csv`, exeData);
+                    saveCSV(path.join( app.getPath('userData'),'SGS/datas', description + '.csv'), exeData);
                 }
             })
         }
