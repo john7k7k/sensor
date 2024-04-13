@@ -371,11 +371,11 @@ export default {
     downloadfinish:false,
   }),
   mounted() {
-    // this.handleData(this.data);
-    window.electronApi.on('init', (e, data) => {
-      this.handleReceivedData(JSON.parse(data));
-    });
-    window.electronApi.send('init', JSON.stringify({}));
+    this.handleData(this.data);
+    // window.electronApi.on('init', (e, data) => {
+    //   this.handleReceivedData(JSON.parse(data));
+    // });
+    // window.electronApi.send('init', JSON.stringify({}));
 },
   computed: {
         filteredData() {

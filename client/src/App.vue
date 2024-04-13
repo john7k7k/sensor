@@ -30,21 +30,21 @@ export default {
         alerm: [true, true, false, false, true, true, 0, 0]
     }
   }));*/
-  window.electronApi.on('search', (e, data) => { //data為回傳資料\
-    console.log(data)
-  })
-  window.electronApi.send('search', JSON.stringify([
-    {   
-        ID: '39-10',
-        startTime: '2024/3/14 10:07:09',
-        quantity: 4
-    },
-    {   
-        ID: '39-78',
-        endTime: '2024/3/14 09:07:48',
-        quantity: 12
-    }
-]));
+  // window.electronApi.on('search', (e, data) => { //data為回傳資料\
+  //   console.log(data)
+  // })
+  // window.electronApi.send('search', JSON.stringify([
+  //   {   
+  //       ID: '39-10',
+  //       startTime: '2024/3/14 10:07:09',
+  //       quantity: 4
+  //   },
+  //   {   
+  //       ID: '39-78',
+  //       endTime: '2024/3/14 09:07:48',
+  //       quantity: 12
+  //   }
+// ]));
 },
 
   components: {  },
