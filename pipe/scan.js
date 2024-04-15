@@ -29,11 +29,11 @@ module.exports = ( ipcMain ) => {
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
             resData[select] = {};
-            const MCUack = await chooseSensor(select);
-            if(!MCUack){
-               resData[select].state = 'MCU  not ack';
-               continue;
-            } ;
+            // const MCUack = await chooseSensor(select);
+            // if(!MCUack){
+            //    resData[select].state = 'MCU  not ack';
+            //    continue;
+            // } ;
             let exeData = await callExe('get_property.exe');
             if(exeData === 'test') exeData = require('./test.js')[1];
             else if(exeData.split('\n').length < 4) {

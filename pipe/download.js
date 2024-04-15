@@ -88,12 +88,12 @@ module.exports = ( ipcMain ) => {
         for(let selectInd in mes.selects){
             let select = mes.selects[selectInd];
             resData[select] = {};
-            const MCUack = await chooseSensor(select);
-            if(!MCUack){
-               resData[select].state = 'MCU  not ack';
-               resData[select].description = decMap[select];
-               continue;
-            } ;
+            // const MCUack = await chooseSensor(select);
+            // if(!MCUack){
+            //    resData[select].state = 'MCU  not ack';
+            //    resData[select].description = decMap[select];
+            //    continue;
+            // } ;
             
             let exeData = await callExe('loading.exe');
             if(exeData.split)
