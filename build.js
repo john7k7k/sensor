@@ -19,12 +19,6 @@ builder.build({
                 "to": "sgs_app_script", // 目标路径（相对于应用程序的根目录）
             }
         ],
-        "extraResources": [
-            {
-                "from": "datas", // 静态文件夹路径
-                "to": "datas", // 目标路径（相对于应用程序的根目录）
-            }
-        ]
     },
 })
 .then(

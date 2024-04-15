@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {app, BrowserWindow, ipcMain, dialog} = require('electron');
+const {app, BrowserWindow, ipcMain, screen} = require('electron');
 const path = require('path');
 const userDataPath = app.getPath('userData');
 const customFolder = path.join(userDataPath, 'SGS');
@@ -13,7 +13,12 @@ if (!fs.existsSync(customFolder)) {
         return;
     }
   });
-
+  fs.writeFileSync(path.join(customFolder,'key.txt'), '', (err) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+  });
   console.log('Custom folder created successfully');
 }
 
@@ -23,23 +28,16 @@ const pipe = require('./pipe')
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true
     }
   });
+  win.maximize()
   win.loadFile(path.join(__dirname, 'public', 'index.html'));
-  // const port = new SerialPort({ path: 'COM11', baudRate: 9600 });
-  // port.write('87\n');
-  // port.on('data', (data) => {
-  //   console.log('ack ' + data);
-  // })
-  // win.on('closed', () => {
-  //   port.close();
-  // });
+  
 }
 pipe(ipcMain);
 

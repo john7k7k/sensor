@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 module.exports = ( ipcMain ) => {
+    //console.log(path.join(app.getPath('userData'),'datas'));
     ipcMain.on('init',(e, mes) => {
         let resData = {};
-        //console.log(path.join(app.getPath('userData'),'datas'));
         fs.readdir(path.join(app.getPath('userData'),'SGS/datas'), async (err, files) => {
             await Promise.all(files.map(fileName => new Promise((resolve, reject) => {
                 fs.readFile((path.join(app.getPath('userData'),'SGS/datas', fileName)), (err, file) => {
@@ -13,8 +13,13 @@ module.exports = ( ipcMain ) => {
                     resolve(0);
                 })
             })))
-            console.log(convertSender(resData));
-            e.sender.send('init', JSON.stringify(convertSender(resData)));
+            resData = convertSender(resData);
+            fs.readFile(path.join(app.getPath('userData'),'SGS/key.txt'),(err, key) => {
+                if(!resData[0]) resData[0] = {};
+                resData[0].authorize = String(key) === ",2-CW=,DLW2-/CV03=DQ-30KF-FCC1[FPEQ";
+                console.log(resData[0]);
+                e.sender.send('init', JSON.stringify(resData));
+            })
         })
     });
 }

@@ -8,5 +8,4 @@ module.exports = defineConfig({
 		}
   },
   publicPath: './',
-  chainWebpack: config=>
 })
