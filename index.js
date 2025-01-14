@@ -48,4 +48,5 @@ pipe(ipcMain);
 app.on('ready', () => {
   
   createWindow();
+
 });

@@ -36,7 +36,7 @@ module.exports = ( ipcMain ) => {
             const MCUack = await chooseSensor(select);
             if(!MCUack){
                
-               resData[select].state = 'MCU  not ack';
+               resData[select].state = 'MCU  not ack' + MCUack;
                continue;
             } ;
            

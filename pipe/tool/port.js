@@ -57,12 +57,12 @@ async function port_write(params, port, test =  0) {
 
 async function chooseSensor(select){
    return new Promise(async (resolve, reject) => {
-        try{
+        //try{
             let mcuack = await port_write(`${select}\n`, port, test = 0);
             console.log('response: ')
             console.log(mcuack)
             resolve(mcuack);
-        }catch(err){resolve(0);}
+        //}catch(err){resolve(0);}
     })
 }
 module.exports = { chooseSensor };
