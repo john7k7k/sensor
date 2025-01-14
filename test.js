@@ -1,2 +1,2 @@
-const date = new Date();
-console.log(date.toLocaleString('zh-TW', { hour12: false }));
+const { callExe } =  require('./pipe/tool/exe.js');
+let exeData = callExe('get_property.exe');

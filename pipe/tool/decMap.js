@@ -19,14 +19,13 @@ function updateDecMap(key, description){
             }
         }
         decMap[key] = description;
-        
         fs.writeFile(path.join(app.getPath('userData'), 'SGS/config/decMap.json'), JSON.stringify(decMap), 'utf8', (err) => {
             if (err) {
               resolve('Error writing file:' + err);
               return;
             }
+            resolve('success');
         })
-        resolve('success');
     })
 }
 

@@ -21,7 +21,7 @@ function convertExeArg(ConfigurepassData, description){
         }
         alerm = alerm.slice(0, 13);
     }
-    let resData = `def ${ConfigurepassData.minimum} ${ConfigurepassData.maximum} ${ConfigurepassData.increment} ${alerm} ${ConfigurepassData.alerm[5]} ${ConfigurepassData.alerm[6]} ${ConfigurepassData.duration} ${ConfigurepassData.intervalread} ${ConfigurepassData.localstartTrip.split(' ')[0]} ${ConfigurepassData.localstartTrip.split(' ')[1]} ${ConfigurepassData.localstartTrip.split(' ')[0]} ${ConfigurepassData.localstartTrip.split(' ')[1]} ${ConfigurepassData.beeper?'T':'F'} ${ConfigurepassData.newbattery?'T':'F'} ${description}`;
+    let resData = `def ${ConfigurepassData.minimum} ${ConfigurepassData.maximum} ${ConfigurepassData.increment} ${alerm} ${ConfigurepassData.alerm[5]} ${ConfigurepassData.alerm[6]} ${ConfigurepassData.duration} ${ConfigurepassData.intervalread} ${ConfigurepassData.startTrip.split(' ')[0]} ${ConfigurepassData.startTrip.split(' ')[1]} ${ConfigurepassData.startTrip.split(' ')[0]} ${ConfigurepassData.startTrip.split(' ')[1]} ${ConfigurepassData.beeper?'T':'F'} ${ConfigurepassData.newbattery?'T':'F'} ${description}`;
     return resData.split(' ');
 }
 
@@ -54,7 +54,7 @@ module.exports = ( ipcMain ) => {
         // }
         let exeArg = convertExeArg(ConfigurepassData, description)
         let exeData = await callExe('configuration.exe ' , exeArg);
-        //console.log(exeData.split("\n")[0])
+        //console.log(exeArg)
         if(exeData.split("\n")[0] === "Can't find Program and Configure window"){
             resData = {
                 description,
@@ -68,6 +68,6 @@ module.exports = ( ipcMain ) => {
             state: "OK" 
         }
         console.log(resData)
-        e.sender.send('scan', JSON.stringify(resData));
+        e.sender.send('configure', JSON.stringify(resData));
     });
 }

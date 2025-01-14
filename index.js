@@ -19,12 +19,16 @@ if (!fs.existsSync(customFolder)) {
         return;
     }
   });
+  fs.writeFileSync(path.join(customFolder, 'escort_path.txt'), '', (err) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+  });
   console.log('Custom folder created successfully');
 }
 
 const pipe = require('./pipe')
-
-
 
 function createWindow() {
   const win = new BrowserWindow({
