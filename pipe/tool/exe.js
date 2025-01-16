@@ -6,7 +6,7 @@ function callExe(exeName, arg ,call = true){
     //console.log(`execute ${exeName}`)
     let exeOut = 0;
     return new Promise((resolve, reject) => {
-        let exePath = path.join( __dirname,'../','../','../','../', 'sgs_app_script',exeName);
+        let exePath = path.join( __dirname,'../','../', 'sgs_app_script',exeName);
         const childProcess = spawn(exePath, arg);
         childProcess.stdout.on('data', (data) => {
             console.log(`out: ${data}`);

@@ -22,12 +22,12 @@ function initPort(com){
         let test_port = new SerialPort({ path: com, baudRate: 9600 }, async (err) => {
             console.error(err);
             if(err) return;
-            // test_port.write(`0\n`);
-            // test_port.on('data', (data) => {
-            //     console.log(com + ' ackInit: ' + data);
-            //     fin = 1;
-            //     resolve(test_port);
-            // });
+            test_port.write(`0\n`);
+            test_port.on('data', (data) => {
+                console.log(com + ' ackInit: ' + data);
+                fin = 1;
+                resolve(test_port);
+            });
             resolve(await port_write( `0\n`, test_port, com))
             setTimeout(() => {
                 if(fin === 0) test_port._disconnected(0);
